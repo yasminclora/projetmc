@@ -164,6 +164,9 @@
         #panier-modal button {
             margin-top: 10px;
         }
+
+           /* Hover effect for buttons */
+   
     </style>
 </head>
 <body>
@@ -183,7 +186,7 @@
                 </li>
                 <li>
                     <a href="/bijoux" class="{{ request()->is('bijoux') ? 'active' : '' }}">
-                        <i class="fas fa-gem"></i> Bijoux
+                        <i class="fas fa-gem"></i> Accessoires
                     </a>
                 </li>
                 <li>
@@ -216,77 +219,165 @@
         <h4>LE MEILLEUR Site d'achat de robe kabyle et Bijoux</h4>
     </header>
 
-    <!-- Section Articles récents -->
-    <section class="recent-section">
-        <h1>Articles récents</h1>
-        <div class="produits">
-            @foreach ($recentArticles as $article)
-                <div class="produit" data-name="{{ $article->nom }}">
-                    <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->nom }}">
-                    <h3>{{ $article->nom }}</h3>
-                    <p>Prix: {{ $article->prix }} DA</p>
 
-                    @if ($article->type === 'robe')
-                        <p>Catégorie: {{ $article->category }}</p>
-                        <p>{{ $article->description }}</p>
-                    @elseif ($article->type === 'bijoux')
-                        <p>Type: {{ $article->type }}</p>
-                    @endif
+    <section class="search-section" style="margin: 30px auto; text-align: center;">
+    <form action="{{ route('accueil.search') }}" method="GET" style="display: inline-block; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <label for="type">Type :</label>
+        <select name="type" id="type" required>
+            <option value="">Choisir</option>
+            <option value="robe">Robe</option>
+            <option value="bijoux">Bijoux</option>
+        </select>
 
-                    <button class="btn-ajouter-panier" 
-                            onclick="ajouterAuPanier({{ $article->id }}, '{{ $article->nom }}', {{ $article->prix }}, '{{ asset('storage/' . $article->image) }}')">
-                        Ajouter au panier
-                    </button>
-                </div>
-            @endforeach
-        </div>
-    </section>
+        <label for="category">Catégorie :</label>
+        <select name="category" id="category">
+            <option value="">Toutes</option>
+        </select>
 
-    <!-- Modale pour afficher le panier -->
-    <div id="panier-modal">
-        <h2>Votre panier</h2>
-        <div id="panier-contenu"></div>
-        <button onclick="document.getElementById('panier-modal').style.display = 'none'">Fermer</button>
-        <button onclick="viderPanier()">Vider le panier</button>
+        <label for="max_price">Prix max :</label>
+        <input type="number" name="max_price" id="max_price" placeholder="ex: 5000" required>
+
+        <button type="submit" style="background-color: saddlebrown; color: white; border: none; padding: 8px 15px; border-radius: 5px;">
+            <i class="fas fa-search"></i> Rechercher
+        </button>
+    </form>
+
+    <!-- Afficher le bouton "Annuler" si des résultats sont présents -->
+    @if(isset($results) && count($results) > 0)
+        <form action="{{ route('accueil') }}" method="GET" style="display: inline-block; margin-left: 10px;">
+            <button type="submit" style="background-color: #f5f5f5; color: saddlebrown; border: 2px solid saddlebrown; padding: 8px 15px; border-radius: 5px; display: flex; align-items: center;">
+                <i class="fas fa-times" style="margin-right: 5px;"></i> Annuler la recherche
+            </button>
+        </form>
+    @endif
+</section>
+
+
+
+<!-- Affichage des résultats de la recherche -->
+@if(isset($results) && count($results) > 0)
+    <h1>Résultats de la recherche</h1>
+    <div class="produits">
+        @foreach ($results as $article)
+            <div class="produit">
+                <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->nom }}">
+                <h3>{{ $article->nom }}</h3>
+                <p>Prix: {{ $article->prix }} DA</p>
+                <button class="btn-ajouter-panier" 
+                        onclick="ajouterAuPanier({{ $article->id }}, '{{ $article->nom }}', {{ $article->prix }}, '{{ asset('storage/' . $article->image) }}')">
+                    Ajouter au panier
+                </button>
+            </div>
+        @endforeach
     </div>
+   
+@endif
+
+<!-- Affichage des articles récents -->
+<h1>Articles récents</h1>
+<div class="produits">
+    @foreach ($recentArticles as $article)
+        <div class="produit">
+            <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->nom }}">
+            <h3>{{ $article->nom }}</h3>
+            <p>Prix: {{ $article->prix }} DA</p>
+            <button class="btn-ajouter-panier" 
+        onclick="ajouterAuPanier({{ $article->id }}, '{{ $article->nom }}', {{ $article->prix }}, '{{ asset('storage/' . $article->image) }}', {{ $article->user_id }})">
+    Ajouter au panier
+</button>
+
+        </div>
+    @endforeach
+</div>
+
+
+
+<!-- Ajout des boutons "Voir Robe" et "Voir Bijoux" dans des boîtes -->
+<div style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
+    <div style="background-color: #f5f5f5; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 200px; text-align: center;">
+        <a href="/robe" style="background-color: saddlebrown; color: white; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background-color 0.3s, transform 0.3s; font-size: 16px;">
+            Voir Robes
+        </a>
+    </div>
+    <div style="background-color: #f5f5f5; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 200px; text-align: center;">
+        <a href="/bijoux" style="background-color: saddlebrown; color: white; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background-color 0.3s, transform 0.3s; font-size: 16px;">
+            Voir Bijoux
+        </a>
+    </div>
+</div>
 
     <!-- Inclure SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Fonction pour ajouter un article au panier
-        function ajouterAuPanier(id, nom, prix, image) {
-            let panier = JSON.parse(localStorage.getItem('panier')) || [];
-            let item = panier.find(item => item.id === id);
+    const typeSelect = document.getElementById('type');
+    const categorySelect = document.getElementById('category');
 
-            if (item) {
-                item.quantite += 1;
-            } else {
-                panier.push({ id, nom, prix, image, quantite: 1 });
-            }
+    const options = {
+        robe: [
+            { value: '', text: 'Toutes' },
+            { value: 'simple', text: 'Simple' },
+            { value: 'fete', text: 'Fête' },
+            { value: 'mariee', text: 'Élégante' }
+        ],
+        bijoux: [
+            { value: '', text: 'Tous' },
+            { value: 'parreur', text: 'parreur' },
+            { value: 'sac', text: 'sac' }
+        ]
+    };
 
-            localStorage.setItem('panier', JSON.stringify(panier));
-            Swal.fire({
-                icon: 'success',
-                title: 'Article ajouté !',
-                text: `${nom} a été ajouté au panier.`,
-                timer: 2000,
-                showConfirmButton: false,
+    typeSelect.addEventListener('change', function () {
+        const selectedType = this.value;
+        categorySelect.innerHTML = ''; // Vider les anciennes options
+
+        if (options[selectedType]) {
+            options[selectedType].forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.text;
+                categorySelect.appendChild(option);
             });
         }
+    });
 
-        // Fonction pour vider le panier
-        function viderPanier() {
-            localStorage.removeItem('panier');
-            document.getElementById('panier-contenu').innerHTML = '';
-            Swal.fire({
-                icon: 'success',
-                title: 'Panier vidé !',
-                text: 'Votre panier a été vidé.',
-                timer: 2000,
-                showConfirmButton: false,
-            });
-        }
-    </script>
+    function ajouterAuPanier(id, nom, prix, image, vendeurId) {
+    let panier = JSON.parse(localStorage.getItem('panier')) || [];
+    
+    // Vérifiez si l'acheteur est le vendeur
+    const currentUserId = @auth {{ auth()->user()->id }} @endauth;
+
+    if (currentUserId === vendeurId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Vous ne pouvez pas acheter votre propre article.',
+            timer: 2000,
+            showConfirmButton: false,
+        });
+        return; // Empêche l'ajout au panier si l'acheteur est le vendeur
+    }
+
+    let item = panier.find(item => item.id === id);
+
+    if (item) {
+        item.quantite += 1;
+    } else {
+        panier.push({ id, nom, prix, image, quantite: 1 });
+    }
+
+    localStorage.setItem('panier', JSON.stringify(panier));
+    Swal.fire({
+        icon: 'success',
+        title: 'Article ajouté !',
+        text: `${nom} a été ajouté au panier.`,
+        timer: 2000,
+        showConfirmButton: false,
+    });
+}
+
+
+</script>
+
 </body>
 </html>

@@ -49,6 +49,9 @@ class BijouxController extends Controller
             'image' => $imagePath,
             'quantite' => $request->quantite,
             'type' => $request->type,
+
+
+            'user_id' => auth()->id(),
         ]);
     
         return back()->with('success', 'Bijou ajouté avec succès');

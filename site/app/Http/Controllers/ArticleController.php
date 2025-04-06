@@ -2,54 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Robe;
 use App\Models\Bijoux;
-use App\Models\Commande;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class AdminController extends Controller
+class ArticleController extends Controller
 {
-    /**
-     * Affiche le tableau de bord administrateur.
-     */
+
+
+    public function __construct()
+{
+    $this->middleware('auth');
+}
+
+
+
     public function index()
     {
-        $robes = Robe::all();
-        $bijoux = Bijoux::all();
-        $commandes = Commande::all(); // Version simple
-        
-        return view('admin', compact('robes', 'bijoux', 'commandes'));
+
+        // Récupérer les robes et bijoux ajoutés par l'utilisateur connecté
+        $robes = Robe::where('user_id', Auth::id())->get();
+        $bijoux = Bijoux::where('user_id', Auth::id())->get();
+
+        return view('articles', compact('robes', 'bijoux'));
     }
 
-    /**
-     * Stocke une nouvelle robe.
-     */
-    public function storeRobe(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:255',
-            'prix' => 'required|numeric',
-            'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category' => 'required|in:simple,fete,mariee',
-            'quantite' => 'required|integer|min:1',
-        ]);
 
-        // Stockage de l'image
-        $imagePath = $request->file('image')->store('images', 'public');
 
-        // Création de la robe
-        Robe::create([
-            'nom' => $request->nom,
-            'prix' => $request->prix,
-            'description' => $request->description,
-            'image' => $imagePath,
-            'category' => $request->category,
-            'quantite' => $request->quantite,
-        ]);
 
-        return redirect()->route('admin')->with('success', 'Robe ajoutée avec succès.');
-    }
 
     /**
      * Met à jour une robe.
@@ -74,7 +55,7 @@ class AdminController extends Controller
         // Mise à jour des autres champs
         $robe->update($request->except('image'));
 
-        return redirect()->route('admin')->with('success', 'Robe mise à jour avec succès.');
+        return redirect()->route('user')->with('success', 'Robe mise à jour avec succès.');
     }
 
     /**
@@ -83,7 +64,7 @@ class AdminController extends Controller
     public function destroyRobe($id)
     {
         Robe::destroy($id);
-        return redirect()->route('admin')->with('success', 'Robe supprimée avec succès.');
+        return redirect()->route('user')->with('success', 'Robe supprimée avec succès.');
     }
 
     /**
@@ -111,8 +92,12 @@ class AdminController extends Controller
             'image' => $imagePath,
         ]);
 
-        return redirect()->route('admin')->with('success', 'Bijou ajouté avec succès.');
+        return redirect()->route('user')->with('success', 'Bijou ajouté avec succès.');
     }
+
+
+
+
 
     /**
      * Met à jour un bijou.
@@ -136,7 +121,7 @@ class AdminController extends Controller
         // Mise à jour des autres champs
         $bijoux->update($request->except('image'));
 
-        return redirect()->route('admin')->with('success', 'Bijou mis à jour avec succès.');
+        return redirect()->route('user')->with('success', 'Bijou mis à jour avec succès.');
     }
 
     /**
@@ -145,20 +130,6 @@ class AdminController extends Controller
     public function destroyBijoux($id)
     {
         Bijoux::destroy($id);
-        return redirect()->route('admin')->with('success', 'Bijou supprimé avec succès.');
+        return redirect()->route('user')->with('success', 'Bijou supprimé avec succès.');
     }
-
-
-
-    public function updateCommande(Request $request, Commande $commande)
-    {
-        $request->validate([
-            'statut' => 'required|in:en_attente,validee,refusee'
-        ]);
-        
-        $commande->update(['statut' => $request->statut]);
-        
-        return back()->with('success', 'Statut mis à jour');
-    }
-
 }

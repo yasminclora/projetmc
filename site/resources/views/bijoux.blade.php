@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bijoux - Boutique</title>
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
@@ -211,7 +211,7 @@
     </li>
     <li>
         <a href="/bijoux" class="{{ request()->is('bijoux') ? 'active' : '' }}">
-            <i class="fas fa-gem"></i> Bijoux
+            <i class="fas fa-gem"></i> Accessoires
         </a>
     </li>
     <li>
@@ -240,9 +240,14 @@
     </div>
 </nav>
 
+
+
+
+
+
     <div class="menu-buttons">
         <button onclick="filterBijoux('sac')">Sacs</button>
-        <button onclick="filterBijoux('parreur')">Parreurs</button>
+        <button onclick="filterBijoux('parreur')">Bijoux</button>
     </div>
 
     <section id="bijoux-section">
@@ -254,9 +259,10 @@
                         <h3>{{ $bijou->nom }}</h3>
                         <p>{{ $bijou->description }}</p>
                         <p class="price">{{ $bijou->prix }} DA</p>
-                        <button class="btn-ajouter-panier" onclick="ajouterAuPanier({{ $bijou->id }}, '{{ $bijou->nom }}', '{{ $bijou->prix }}', '{{ asset('storage/' . $bijou->image) }}')">
-                            Ajouter au panier
-                        </button>
+                        <button class="btn-ajouter-panier" onclick="ajouterAuPanier({{ $bijou->id }}, '{{ $bijou->nom }}', '{{ $bijou->prix }}', '{{ asset('storage/' . $bijou->image) }}', {{ $bijou->user_id }})">
+    Ajouter au panier
+</button>
+
                     </div>
                 @endforeach
             </div>
@@ -279,22 +285,46 @@
             document.querySelector(`.menu-buttons button[onclick="filterBijoux('${category}')"]`).classList.add('active');
         }
 
-        function ajouterAuPanier(id, nom, prix, image) {
-            let panier = JSON.parse(localStorage.getItem('panier')) || [];
-            let item = panier.find(item => item.id === id);
+        function ajouterAuPanier(id, nom, prix, image, vendeurId) {
+    // Récupérer l'ID de l'utilisateur connecté (que vous passez depuis le backend)
+    const currentUserId = @auth {{ auth()->user()->id }} @endauth;
+    // Vous pouvez utiliser cette syntaxe pour obtenir l'ID du vendeur dans le backend
 
-            if (item) {
-                item.quantite += 1;
-            } else {
-                panier.push({ id, nom, prix, image, quantite: 1 });
-            }
+    // Vérifier si l'acheteur est le vendeur
+    if (currentUserId === vendeurId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Vous ne pouvez pas acheter votre propre bijou.',
+            timer: 2000,
+            showConfirmButton: false,
+        });
+        return; // Empêcher l'ajout au panier si l'utilisateur est le vendeur
+    }
 
-            localStorage.setItem('panier', JSON.stringify(panier));
-            alert(`${nom} ajouté au panier !`);
-        }
+    // Si ce n'est pas l'article du vendeur, on continue normalement
+    let panier = JSON.parse(localStorage.getItem('panier')) || [];
+    let item = panier.find(item => item.id === id);
+
+    if (item) {
+        item.quantite += 1;
+    } else {
+        panier.push({ id, nom, prix, image, quantite: 1 });
+    }
+
+    localStorage.setItem('panier', JSON.stringify(panier));
+    alert(`${nom} ajouté au panier !`);
+}
+
 
         // Afficher les sacs par défaut au chargement de la page
         window.onload = () => filterBijoux('sac');
+
+
+
+
+
+        
     </script>
 
 </body>

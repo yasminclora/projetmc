@@ -43,10 +43,8 @@ Route::get('/admin', [AdminController::class, 'index'])->name('admin');
 
 use App\Http\Controllers\AccueilController;
 
-Route::get('/', [AccueilController::class, 'index']);
-
-
-Route::get('/search', [AccueilController::class, 'search'])->name('search');
+Route::get('/', [AccueilController::class, 'index'])->name('accueil');
+Route::get('/recherche', [AccueilController::class, 'search'])->name('accueil.search');
 
 
 
@@ -64,9 +62,18 @@ Route::put('/admin/bijoux/{id}', [AdminController::class, 'updateBijoux'])->name
 Route::delete('/admin/bijoux/{id}', [AdminController::class, 'destroyBijoux'])->name('admin.bijoux.destroy');
 
 
+// Routes pour les commandes
+Route::put('/admin/commandes/{commande}', [AdminController::class, 'updateCommande'])->name('admin.commandes.update');
+//commandes recu pour chaque user 
+Route::get('/commandes-recues', [CommandeController::class, 'commandesRecues'])
+    ->name('commandes_recues')
+    ->middleware('auth');
 
 
-
+    //modifi statut pas user
+    Route::put('/commandes/{id}/statut', [CommandeController::class, 'updateStatut'])
+    ->name('commandes.update_statut')
+    ->middleware('auth');
 
 
 
@@ -115,6 +122,32 @@ Route::post('/commander', [CommandeController::class, 'store'])->name('commander
 
 
 
+Route::put('/commande/{commande}/update-items-statut', [CommandeController::class, 'updateStatutsParCommande'])
+    ->name('commande_items.update_statuts_par_commande');
+
+
+
+use App\Http\Controllers\ArticleController;
+
+Route::get('/mes-articles', [ArticleController::class, 'index'])->name('mes_articles');
+
+Route::get('/mes-commandes', [App\Http\Controllers\CommandeController::class, 'mesCommandes'])
+    ->name('mes_commandes')
+    ->middleware('auth');
+
+// Route pour afficher le tableau de bord utilisateur
+Route::get('/articles', [ArticleController::class, 'index'])->name('user');
+
+
+// Routes pour les robes
+Route::post('/articles/robes', [ArticleController::class, 'storeRobe'])->name('user.robes.store');
+Route::put('/articles/robes/{id}', [ArticleController::class, 'updateRobe'])->name('user.robes.update');
+Route::delete('/articles/robes/{id}', [ArticleController::class, 'destroyRobe'])->name('user.robes.destroy');
+
+// Routes pour les bijoux
+Route::post('/articles/bijoux', [ArticleController::class, 'storeBijoux'])->name('user.bijoux.store');
+Route::put('/articles/bijoux/{id}', [ArticleController::class, 'updateBijoux'])->name('user.bijoux.update');
+Route::delete('/articles/bijoux/{id}', [ArticleController::class, 'destroyBijoux'])->name('user.bijoux.destroy');
 
 
 
@@ -140,4 +173,22 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 
+
+Route::middleware(['auth'])->group(function () {
+    // Panier
+    Route::get('/panier', [PanierController::class, 'index'])->name('panier.index');
+    Route::post('/panier/ajouter', [PanierController::class, 'ajouter'])->name('panier.ajouter');
+    Route::post('/panier/{item}/update', [PanierController::class, 'update'])->name('panier.update');
+    Route::delete('/panier/{item}/remove', [PanierController::class, 'remove'])->name('panier.remove');
+    Route::post('/panier/commander', [PanierController::class, 'commander'])->name('panier.commander');
+    
+    // Confirmation
+    Route::get('/confirmation', function () {
+        return view('panier.confirmation');
+    })->name('confirmation');
+});
+
+
+Route::post('/commander', [CommandeController::class, 'store'])->name('commander.store');
+Route::get('/confirmation-commande', [CommandeController::class, 'confirmation'])->name('commande.confirmation');
 

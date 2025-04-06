@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <style>
@@ -231,7 +231,7 @@
     </li>
     <li>
         <a href="/bijoux" class="{{ request()->is('bijoux') ? 'active' : '' }}">
-            <i class="fas fa-gem"></i> Bijoux
+            <i class="fas fa-gem"></i> Accessoires
         </a>
     </li>
     <li>
@@ -275,9 +275,10 @@
                 <h3>{{ $robe->nom }}</h3>
                 <p>{{ $robe->description }}</p>
                 <p class="price">{{ $robe->prix }} DA</p>
-                <button class="btn-ajouter-panier" onclick="ajouterAuPanier({{ $robe->id }}, '{{ $robe->nom }}', '{{ $robe->prix }}', '{{ asset('storage/'.$robe->image) }}')">
-                    Ajouter au panier
-                </button>
+                <button class="btn-ajouter-panier" onclick="ajouterAuPanier({{ $robe->id }}, '{{ $robe->nom }}', '{{ $robe->prix }}', '{{ asset('storage/' . $robe->image) }}', {{ $robe->user_id }})">
+    Ajouter au panier
+</button>
+
             </div>
             @endforeach
         </div>
@@ -300,19 +301,36 @@
             document.querySelector(`.menu-buttons button[onclick="filterRobes('${category}')"]`).classList.add('active');
         }
 
-        function ajouterAuPanier(id, nom, prix, image) {
-            let panier = JSON.parse(localStorage.getItem('panier')) || [];
-            let item = panier.find(item => item.id === id);
+        function ajouterAuPanier(id, nom, prix, image, vendeurId) {
+    // Récupérer l'ID de l'utilisateur connecté (que vous passez depuis le backend)
+    const currentUserId = @auth {{ auth()->user()->id }} @endauth;
+    // Vous pouvez utiliser cette syntaxe pour obtenir l'ID du vendeur dans le backend
 
-            if (item) {
-                item.quantite += 1;
-            } else {
-                panier.push({ id, nom, prix, image, quantite: 1 });
-            }
+    // Vérifier si l'acheteur est le vendeur
+    if (currentUserId === vendeurId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Vous ne pouvez pas acheter votre propre robe.',
+            timer: 2000,
+            showConfirmButton: false,
+        });
+        return; // Empêcher l'ajout au panier si l'utilisateur est le vendeur
+    }
 
-            localStorage.setItem('panier', JSON.stringify(panier));
-            alert(`${nom} ajouté au panier !`);
-        }
+    // Si ce n'est pas l'article du vendeur, on continue normalement
+    let panier = JSON.parse(localStorage.getItem('panier')) || [];
+    let item = panier.find(item => item.id === id);
+
+    if (item) {
+        item.quantite += 1;
+    } else {
+        panier.push({ id, nom, prix, image, quantite: 1 });
+    }
+
+    localStorage.setItem('panier', JSON.stringify(panier));
+    alert(`${nom} ajouté au panier !`);
+}
 
         window.onload = () => filterRobes('simple');
     </script>

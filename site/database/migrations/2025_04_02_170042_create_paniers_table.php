@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('commandes', function (Blueprint $table) {
+        Schema::create('paniers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->string('reference')->unique();
-            $table->enum('statut', ['en_attente', 'payée', 'expédiée', 'annulée'])->default('en_attente');
-            $table->decimal('total', 10, 2);
+            $table->enum('statut', ['actif', 'commandé', 'livré'])->default('actif');
+            
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('commandes');
+        Schema::dropIfExists('paniers');
     }
 };

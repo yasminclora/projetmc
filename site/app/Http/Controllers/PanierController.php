@@ -2,61 +2,86 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\{Panier, PanierItem, Robe, Bijoux};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PanierController extends Controller
 {
-   // Affiche la page du panier
-   public function index()
-   {
-       return view('panier');
-   }
+    public function index()
+    {
+        $panier = Panier::firstOrCreate([
+            'user_id' => Auth::id(),
+            'statut' => 'actif'
+        ], ['statut' => 'actif']);
 
+        $panier->load(['items.produit']);
 
+        return view('panier.index', compact('panier'));
+    }
 
-
-    // Ajouter un produit au panier (si on veut gérer avec la session Laravel)
     public function ajouter(Request $request)
     {
-        $produit = [
-            'id' => $request->id,
-            'nom' => $request->nom,
-            'prix' => $request->prix,
-            'image' => $request->image,
-            'quantite' => 1
-        ];
+        $request->validate([
+            'produit_id' => 'required|integer',
+            'type' => 'required|in:robe,bijou'
+        ]);
 
-        $panier = session()->get('panier', []);
+        $panier = Panier::firstOrCreate([
+            'user_id' => Auth::id(),
+            'statut' => 'actif'
+        ]);
+
+        $produit = $request->type === 'robe'
+            ? Robe::findOrFail($request->produit_id)
+            : Bijoux::findOrFail($request->produit_id);
+
+        PanierItem::updateOrCreate(
+            [
+                'panier_id' => $panier->id,
+                'produit_type' => get_class($produit),
+                'produit_id' => $produit->id
+            ],
+            [
+                'quantite' => \DB::raw('quantite + 1'),
+                'prix_unitaire' => $produit->prix
+            ]
+        );
+
+        return back()->with('success', 'Produit ajouté au panier');
+    }
+
+    public function update(Request $request, PanierItem $item)
+    {
+        $request->validate([
+            'action' => 'required|in:increase,decrease'
+        ]);
+
+        if ($request->action === 'increase') {
+            $item->increment('quantite');
+        } elseif ($item->quantite > 1) {
+            $item->decrement('quantite');
+        }
+
+        return back();
+    }
+
+    public function remove(PanierItem $item)
+    {
+        $item->delete();
+        return back()->with('success', 'Produit retiré du panier');
+    }
+
+    public function commander(Panier $panier)
+    {
+        $panier->update(['statut' => 'commandé']);
         
-        if (isset($panier[$produit['id']])) {
-            $panier[$produit['id']]['quantite']++;
-        } else {
-            $panier[$produit['id']] = $produit;
-        }
+        // Ici vous pourriez ajouter :
+        // - Création d'une commande
+        // - Envoi d'email de confirmation
+        // - Paiement, etc.
 
-        session()->put('panier', $panier);
-        return response()->json(['message' => 'Produit ajouté au panier']);
+        return redirect()->route('confirmation')
+            ->with('success', 'Commande validée avec succès');
     }
-
-    // Supprimer un produit du panier
-    public function retirer($id)
-    {
-        $panier = session()->get('panier', []);
-
-        if (isset($panier[$id])) {
-            unset($panier[$id]);
-            session()->put('panier', $panier);
-        }
-
-        return response()->json(['message' => 'Produit retiré du panier']);
-    }
-
-    // Vider complètement le panier
-    public function vider()
-    {
-        session()->forget('panier');
-        return response()->json(['message' => 'Panier vidé']);
-    }
-
-
 }

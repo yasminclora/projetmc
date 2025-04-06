@@ -95,7 +95,6 @@
                                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                             </form>
 
-                            <button class="btn btn-warning btn-sm" onclick="afficherForm({{ $robe->id }})">Modifier</button>
 
                             <!-- Formulaire caché de modification -->
                             <form id="form-{{ $robe->id }}" action="{{ route('admin.robes.update', $robe->id) }}" method="POST" enctype="multipart/form-data" class="mt-2" style="display:none;">
@@ -215,12 +214,57 @@
             </table>
         </div>
 
-        <!-- Section Commandes -->
-        <div id="section-commandes" class="section mt-4" style="display:none;">
-            <h2>Liste des Commandes</h2>
-            <p>Aucune commande pour le moment.</p>
+       <!-- Section Commandes -->
+<div id="section-commandes" class="section mt-4" style="display:none;">
+    <h2>Liste des Commandes</h2>
+    
+    @if($commandes->isEmpty())
+        <p>Aucune commande pour le moment.</p>
+    @else
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="table-primary">
+                        <th>N° Commande</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($commandes as $commande)
+                    <tr>
+                        <td>#{{ $commande->id }}</td>
+                        <td>{{ $commande->created_at->format('d/m/Y H:i') }}</td>
+                        <td>{{ number_format($commande->total, 2, ',', ' ') }} DA</td>
+                        <td>
+                            <span class="badge 
+                                @if($commande->statut == 'en_attente') bg-warning
+                                @elseif($commande->statut == 'validee') bg-success
+                                @elseif($commande->statut == 'refusee') bg-danger
+                                @endif">
+                                {{ ucfirst(str_replace('_', ' ', $commande->statut)) }}
+                            </span>
+                        </td>
+                        <td>
+                            <form action="{{ route('admin.commandes.update', $commande->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <select name="statut" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="en_attente" {{ $commande->statut == 'en_attente' ? 'selected' : '' }}>En attente</option>
+                                    <option value="validee" {{ $commande->statut == 'validee' ? 'selected' : '' }}>Validée</option>
+                                    <option value="refusee" {{ $commande->statut == 'refusee' ? 'selected' : '' }}>Refusée</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-    </div>
+    @endif
+</div>
 
     <!-- Modal : Formulaire d'ajout de robe -->
     <div class="modal fade" id="ajouterRobeModal" tabindex="-1" aria-labelledby="ajouterRobeLabel" aria-hidden="true">

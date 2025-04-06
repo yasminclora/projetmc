@@ -7,12 +7,17 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
+
+    
     // Afficher le profil de l'utilisateur
     public function show()
     {
         $user = Auth::user();
         return view('profile', compact('user'));
     }
+
+
+
 
     // Afficher le formulaire de modification du profil
     public function edit()
@@ -40,4 +45,8 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.show')->with('success', 'Profil mis à jour avec succès !');
     }
+
+
+ 
+
 }

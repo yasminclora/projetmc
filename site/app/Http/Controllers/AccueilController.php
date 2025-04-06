@@ -13,25 +13,22 @@ class AccueilController extends Controller
         // Récupérer les 4 dernières robes et les 4 derniers bijoux
         $recentRobes = Robe::latest()->take(4)->get();
         $recentBijoux = Bijoux::latest()->take(4)->get();
-
+    
         // Fusionner les deux collections
         $recentArticles = $recentRobes->merge($recentBijoux);
-
+    
         // Passer les données à la vue
         return view('accueil', compact('recentArticles'));
     }
-
+    
     public function search(Request $request)
     {
-        // Récupérer les critères de recherche
-        $type = $request->input('type'); // 'robe' ou 'bijoux'
-        $category = $request->input('category'); // 'simple', 'fete', 'mariee'
-        $maxPrice = $request->input('max_price'); // Prix maximum
-
-        // Initialiser les résultats
+        $type = $request->input('type');
+        $category = $request->input('category');
+        $maxPrice = $request->input('max_price');
+        
         $results = [];
-
-        // Rechercher en fonction du type et du prix
+    
         if ($type === 'robe') {
             $query = Robe::where('prix', '<=', $maxPrice);
             if ($category) {
@@ -39,14 +36,22 @@ class AccueilController extends Controller
             }
             $results = $query->get();
         } elseif ($type === 'bijoux') {
-            $results = Bijoux::where('prix', '<=', $maxPrice)->get();
+            $query = Bijoux::where('prix', '<=', $maxPrice);
+            if ($category) {
+                $query->where('type', $category);
+            }
+            $results = $query->get();
         }
-
-        // Retourner les résultats à la vue
+    
+        // Récupérer aussi les articles récents
+        $recentRobes = Robe::latest()->take(4)->get();
+        $recentBijoux = Bijoux::latest()->take(4)->get();
+        $recentArticles = $recentRobes->merge($recentBijoux);
+    
         return view('accueil', [
             'results' => $results,
-            'carouselImages' => [],
-            'recentArticles' => []
+            'recentArticles' => $recentArticles
         ]);
     }
+    
 }

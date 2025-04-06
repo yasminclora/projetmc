@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Robe;
+use App\Models\Bijoux;
 use Illuminate\Http\Request;
 
 class RobeController extends Controller
@@ -19,33 +21,35 @@ class RobeController extends Controller
     }
     
 
+ 
+
+
     public function store(Request $request)
     {
         $request->validate([
             'nom' => 'required|string|max:255',
             'prix' => 'required|numeric',
-            'description' => 'nullable|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string',
             'category' => 'required|in:simple,fete,mariee',
             'quantite' => 'required|integer|min:1',
         ]);
-
-          // Stockage de l'image
-    $imagePath = $request->file('image')->store('images', 'public');
-
-    // Ajouter à la BDD
-    Robe::create([
-        'nom' => $request->nom,
-        'prix' => $request->prix,
-        'description' => $request->description,
-        'image' => $imagePath,  // Stocke le chemin de l'image
-        'category' => $request->category,
-        'quantite' => $request->quantite,
-    ]);
-
-    return back()->with('success', 'Robe ajoutée avec succès');
-}
-
+    
+        $imagePath = $request->file('image')->store('images', 'public');
+    
+        Robe::create([
+            'nom' => $request->nom,
+            'prix' => $request->prix,
+            'image' => $imagePath,
+            'description' => $request->description,
+            'category' => $request->category,
+            'quantite' => $request->quantite,
+            'user_id' => auth()->id(),
+        ]);
+    
+        return back()->with('success', 'Robe ajoutée avec succès');
+    }
+    
 
 
 

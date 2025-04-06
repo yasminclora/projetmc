@@ -204,71 +204,128 @@
     </footer>
 
     <script>
+        // Afficher le panier au chargement de la page
+        window.onload = afficherPanier;
 
-  
+        // Fonction pour afficher le panier
+        function afficherPanier() {
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            let panierContainer = document.getElementById('panier-container');
+            let totalPriceElement = document.getElementById('total-price');
 
+            if (panier.length === 0) {
+                panierContainer.innerHTML = "<p>Votre panier est vide.</p>";
+                totalPriceElement.innerHTML = "Total : 0 DA";
+                return;
+            }
 
-    // Fonction pour afficher le panier
-    function afficherPanier() {
-        let panier = JSON.parse(localStorage.getItem('panier')) || [];
-        let panierContainer = document.getElementById('panier-container');
-        let totalPriceElement = document.getElementById('total-price');
+            let totalCommande = 0;
+            let html = "";
 
-        if (panier.length === 0) {
-            panierContainer.innerHTML = "<p>Votre panier est vide.</p>";
-            totalPriceElement.innerHTML = "Total : 0 DA";
-            return;
+            panier.forEach((item, index) => {
+                let totalItem = item.prix * item.quantite;
+                totalCommande += totalItem;
+
+                html += `
+                    <div class="panier-card">
+                        <img src="${item.image.startsWith('http') ? item.image : '/storage/' + item.image}" alt="${item.nom}">
+                        <div class="details">
+                            <h3>${item.nom}</h3>
+                            <p class="price">Prix unitaire : ${item.prix} DA</p>
+                            <p class="price">Total : <span id="total-${index}">${totalItem}</span> DA</p>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changerQuantite(${index}, -1)">-</button>
+                                <input type="text" class="quantity-input" id="quantite-${index}" value="${item.quantite}" readonly>
+                                <button class="quantity-btn" onclick="changerQuantite(${index}, 1)">+</button>
+                            </div>
+                        </div>
+                        <button class="btn-remove" onclick="retirerDuPanier(${index})">Supprimer</button>
+                    </div>
+                `;
+            });
+
+            totalPriceElement.innerHTML = `Total : ${totalCommande} DA`;
+            panierContainer.innerHTML = html;
         }
 
-        let totalCommande = 0;
-        let html = "";
+        // Fonction pour changer la quantité d'un article
+        function changerQuantite(index, variation) {
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            if (!panier[index]) return;
 
-        panier.forEach((item, index) => {
-            let totalItem = item.prix * item.quantite;
-            totalCommande += totalItem;
+            panier[index].quantite += variation;
+            if (panier[index].quantite < 1) panier[index].quantite = 1;
 
-            html += `
-                <div class="panier-card">
-                    <img src="${item.image.startsWith('http') ? item.image : '/storage/' + item.image}" alt="${item.nom}">
-                    <div class="details">
-                        <h3>${item.nom}</h3>
-                        <p class="price">Prix unitaire : ${item.prix} DA</p>
-                        <p class="price">Total : <span id="total-${index}">${totalItem}</span> DA</p>
-                        <div class="quantity-control">
-                            <button class="quantity-btn" onclick="changerQuantite(${index}, -1)">-</button>
-                            <input type="text" class="quantity-input" id="quantite-${index}" value="${item.quantite}" readonly>
-                            <button class="quantity-btn" onclick="changerQuantite(${index}, 1)">+</button>
-                        </div>
-                    </div>
-                    <button class="btn-remove" onclick="retirerDuPanier(${index})">Supprimer</button>
-                </div>
-            `;
+            localStorage.setItem('panier', JSON.stringify(panier));
+            afficherPanier();
+        }
+
+        // Fonction pour retirer un article du panier
+        function retirerDuPanier(index) {
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            panier.splice(index, 1);
+            localStorage.setItem('panier', JSON.stringify(panier));
+            afficherPanier();
+        }
+
+
+
+        async function validerCommande() {
+    const panier = JSON.parse(localStorage.getItem('panier')) || [];
+    console.log('Contenu du panier avant envoi:', JSON.stringify(panier, null, 2));
+
+    if (panier.length === 0) {
+        alert('Votre panier est vide !');
+        return;
+    }
+
+    // Transformation des données avec vérification stricte
+    const items = panier.map(item => {
+        // Vérification explicite du type
+        if (item.category === 'robes' || item.nom.includes('Robe')) {
+            return {
+                id: item.id,
+                type: 'robe',
+                quantite: item.quantite,
+                prix: item.prix
+            };
+        } else {
+            return {
+                id: item.id,
+                type: 'bijou',
+                quantite: item.quantite,
+                prix: item.prix
+            };
+        }
+    });
+
+    console.log('Données transformées pour envoi:', JSON.stringify(items, null, 2));
+
+    try {
+        const response = await fetch('/commander', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ items })
         });
 
-        totalPriceElement.innerHTML = `Total : ${totalCommande} DA`;
-        panierContainer.innerHTML = html;
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Détails de l\'erreur:', errorData);
+            throw new Error(errorData.message || 'Erreur serveur');
+        }
+
+        const data = await response.json();
+        localStorage.removeItem('panier');
+        window.location.href = `/confirmation-commande?reference=${data.reference}`;
+    } catch (error) {
+        console.error('Erreur complète:', error);
+        alert(`Erreur: ${error.message}\nVeuillez vérifier la console pour plus de détails.`);
     }
-
-    // Fonction pour changer la quantité d'un article
-    function changerQuantite(index, variation) {
-        let panier = JSON.parse(localStorage.getItem('panier')) || [];
-        if (!panier[index]) return;
-
-        panier[index].quantite += variation;
-        if (panier[index].quantite < 1) panier[index].quantite = 1;
-
-        localStorage.setItem('panier', JSON.stringify(panier));
-        afficherPanier();
-    }
-
-    // Fonction pour retirer un article du panier
-    function retirerDuPanier(index) {
-        let panier = JSON.parse(localStorage.getItem('panier')) || [];
-        panier.splice(index, 1);
-        localStorage.setItem('panier', JSON.stringify(panier));
-        afficherPanier();
-    }
-</script>
-
+}
+    </script>
 </body>
 </html>
