@@ -12,12 +12,19 @@ use App\Http\Controllers\AdminController;
 
 
 
+Auth::routes();
 
 
 use App\Http\Controllers\ProfileController;
 
 // Afficher le profil
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show')->middleware('auth');
+
+Route::get('/ad', [AdminController::class, 'show'])->name('ad.show')->middleware('auth');
+
+
+
+
 
 // Modifier le profil
 Route::get('/edit', [ProfileController::class, 'edit'])->name('edit')->middleware('auth');
@@ -38,6 +45,8 @@ Route::get('/admin', [AdminController::class, 'index'])->name('admin');
 
 
 
+
+Route::get('/ad', [AdminController::class, 'index'])->name('ad');
 
 
 
@@ -62,6 +71,10 @@ Route::put('/admin/bijoux/{id}', [AdminController::class, 'updateBijoux'])->name
 Route::delete('/admin/bijoux/{id}', [AdminController::class, 'destroyBijoux'])->name('admin.bijoux.destroy');
 
 
+
+
+
+
 // Routes pour les commandes
 Route::put('/admin/commandes/{commande}', [AdminController::class, 'updateCommande'])->name('admin.commandes.update');
 //commandes recu pour chaque user 
@@ -76,6 +89,31 @@ Route::get('/commandes-recues', [CommandeController::class, 'commandesRecues'])
     ->middleware('auth');
 
 
+//robe detaul 
+// routes/web.php
+
+//comments pour robes
+
+Route::get('robe/{id}', [RobeController::class, 'show'])->name('robes.detail');
+Route::post('/robe/{id}/commentaire', [RobeController::class, 'addComment'])->name('robes.addComment');
+
+
+Route::post('/robes/{id}/commentaires', [RobeController::class, 'addComment'])->name('commentaires.store');
+Route::get('/commentaires/{id}/edit', [RobeController::class, 'editComment'])->name('commentaires.edit');
+Route::put('/commentaires/{id}', [RobeController::class, 'updateComment'])->name('commentaires.update');
+Route::delete('/commentaires/{id}', [RobeController::class, 'destroyComment'])->name('commentaires.destroy');
+
+
+//comment pour bijou
+Route::get('bijou/{id}', [BijouxController::class, 'show'])->name('bijou.detail');
+Route::post('/bijou/{id}/commentaire', [BijouxController::class, 'addComment'])->name('bijou.addComment');
+
+
+Route::post('/bijou/{id}/commentaires', [BijouxController::class, 'addComment'])->name('commentaires.store');
+Route::get('/commentaires/{id}/edit', [BijouxController::class, 'editComment'])->name('commentaires.edit');
+Route::put('/commentaires/{id}', [BijouxController::class, 'updateComment'])->name('commentaires.update');
+Route::delete('/commentaires/{id}', [BijouxController::class, 'destroyComment'])->name('commentaires.destroy');
+
 
 
 
@@ -87,7 +125,6 @@ Route::get('/robe/create', function () {
 })->name('robes.create');
 
 Route::post('/robe', [RobeController::class, 'store'])->name('robes.store');
-Route::get('/robe/{id}', [RobeController::class, 'show'])->name('robes.show');
 
 
 Route::delete('/robe/{id}', [RobeController::class, 'destroy'])->name('robes.destroy');
@@ -117,8 +154,25 @@ Route::get('commandes/{id}', [CommandeController::class, 'show'])->name('command
 Route::post('/commander', [CommandeController::class, 'store'])->name('commander');
 
 
+// web.php (routes)
+use App\Http\Controllers\NotificationController;
+//notif cote acheteru
+
+Route::get('/notifications/unread/count', [NotificationController::class, 'countUnread']);
+Route::get('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
+Route::get('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
 
+
+
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications/validées', [NotificationController::class, 'showValidatedNotifications'])->name('notifications.validated');
+    Route::get('/notifications/reçues', [NotificationController::class, 'showReceivedNotifications'])->name('notifications.received');
+});
 
 
 
@@ -165,11 +219,6 @@ Route::get('/ajouter-robe', function () {
 Route::get('/ajouter-bijoux', function () {
     return view('ajouter-bijoux'); // Assure-toi que le fichier est bien dans resources/views
 });
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
 
 
 
@@ -191,4 +240,10 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/commander', [CommandeController::class, 'store'])->name('commander.store');
 Route::get('/confirmation-commande', [CommandeController::class, 'confirmation'])->name('commande.confirmation');
+
+
+
+
+
+
 

@@ -6,71 +6,71 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+   
 
-    <title>Boutique des robes et bijoux kabyles</title>
+    <title>Boutique de Robes Kabyle et accessoires</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <style>
-        /* GLOBAL STYLES */
-        html {
-    scroll-behavior: smooth;
-}
+       
 
 body {
-    margin: 0;
-    padding: 10px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    background-color: #f5f5f5;
-}
+            font-family: 'Georgia', 'Times New Roman', Times, serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
 
-/* NAVIGATION */
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #fff;
-    border-bottom: 2px solid #ccc;
-}
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 2px solid #ccc;
+        }
 
-nav h1 {
-    color: saddlebrown;
-    font-family: 'Playfair Display', serif;
-    font-size: 30px;
-}
+        nav h1 {
+            color: saddlebrown;
+            font-family: 'Playfair Display', serif;
+            font-size: 30px;
+        }
 
-nav .onglet ul {
-    list-style-type: none;
-    padding: 0;
-}
+        nav .onglet ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
 
-nav .onglet li {
-    display: inline-block;
-    margin-right: 20px;
-}
+        nav .onglet li {
+            margin-right: 20px;
+        }
 
-nav .onglet a {
-    text-decoration: none;
-    color: tan;
-    font-weight: bold;
-    transition: color 0.3s;
-}
+        nav .onglet a {
+            text-decoration: none;
+            color: tan;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
 
-nav .onglet a:hover {
-    color: saddlebrown;
-}
+        nav .onglet a:hover,
+        .onglet a.active {
+            color: saddlebrown;
+            border-bottom: 2px solid saddlebrown;
+        }
 
-.onglet a.active {
-    color: saddlebrown;
-    border-bottom: 2px solid saddlebrown; /* Ajout d'un soulignement sous le lien actif */
-}
+
 
         /* Bouton de déconnexion */
         .dropdown-menu {
@@ -95,10 +95,9 @@ nav .onglet a:hover {
     </style>
 </head>
 <body>
-   
-       
+    
 <nav>
-    <h1>Boutique de Bijoux et Robes</h1>
+<h1>Boutique de Robes Kabyle et Accessoires</h1>
     <div class="onglet">
     <ul>
     <li>
@@ -113,7 +112,7 @@ nav .onglet a:hover {
     </li>
     <li>
         <a href="/bijoux" class="{{ request()->is('bijoux') ? 'active' : '' }}">
-            <i class="fas fa-gem"></i> Bijoux
+            <i class="fas fa-gem"></i> Accessoires
         </a>
     </li>
     <li>

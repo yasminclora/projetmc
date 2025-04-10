@@ -139,6 +139,29 @@
             color: #333;
         }
 
+        .btn{
+            background-color: #6d4c41;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn:hover {
+            background-color: #3e2723;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btnactive {
+            transform: translateY(0);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
         .bijoux-card .btn-ajouter-panier {
             background-color: #6d4c41;
             color: white;
@@ -196,7 +219,7 @@
 
     
 <nav>
-    <h1>Boutique de Bijoux et Robes</h1>
+<h1>Boutique de Robes Kabyle et Accessoires</h1>
     <div class="onglet">
     <ul>
     <li>
@@ -237,9 +260,9 @@
         </li>
     @endguest
 </ul>
+
     </div>
 </nav>
-
 
 
 
@@ -261,19 +284,28 @@
                         <p class="price">{{ $bijou->prix }} DA</p>
                         <button class="btn-ajouter-panier" onclick="ajouterAuPanier({{ $bijou->id }}, '{{ $bijou->nom }}', '{{ $bijou->prix }}', '{{ asset('storage/' . $bijou->image) }}', {{ $bijou->user_id }})">
     Ajouter au panier
-</button>
-
+</button   >
+  <button class="btn-ajouter-panier">
+<a href="{{ route('bijou.detail', ['id' => $bijou->id]) }}">Voir les détails</a>
+    </button>
                     </div>
                 @endforeach
             </div>
         @endforeach
     </section>
 
-    <footer>
-        <p>&copy; 2025 Boutique de Bijoux. Tous droits réservés.</p>
-    </footer>
+ 
 
     <script>
+
+@auth
+        // Passer l'ID de l'utilisateur connecté dans une variable JavaScript
+        const currentUserId = {{ auth()->user()->id }};
+    @else
+        // Si l'utilisateur n'est pas authentifié, currentUserId sera null
+        const currentUserId = null;
+    @endauth
+
         function filterBijoux(category) {
             document.querySelectorAll('.bijoux-category').forEach(cat => {
                 cat.style.display = cat.id.includes(category) ? 'flex' : 'none';
@@ -286,20 +318,34 @@
         }
 
         function ajouterAuPanier(id, nom, prix, image, vendeurId) {
-    // Récupérer l'ID de l'utilisateur connecté (que vous passez depuis le backend)
-    const currentUserId = @auth {{ auth()->user()->id }} @endauth;
-    // Vous pouvez utiliser cette syntaxe pour obtenir l'ID du vendeur dans le backend
 
-    // Vérifier si l'acheteur est le vendeur
-    if (currentUserId === vendeurId) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Vous ne pouvez pas acheter votre propre bijou.',
-            timer: 2000,
-            showConfirmButton: false,
+
+               // Vérifier si l'utilisateur est authentifié
+        if (currentUserId === null) {
+              Swal.fire({
+            icon: 'info',
+            title: 'Connexion requise',
+            text: 'Veuillez vous connecter pour ajouter des articles au panier',
+            showCancelButton: true,
+            confirmButtonText: 'Se connecter',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
         });
-        return; // Empêcher l'ajout au panier si l'utilisateur est le vendeur
+        return; // Empêcher l'ajout au panier si l'utilisateur n'est pas connecté
+        }
+      // Vérifier si l'acheteur est le vendeur
+      if (currentUserId === vendeurId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Vous ne pouvez pas acheter votre propre accessoire.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                return; // Empêcher l'ajout au panier si l'utilisateur est le vendeur
     }
 
     // Si ce n'est pas l'article du vendeur, on continue normalement

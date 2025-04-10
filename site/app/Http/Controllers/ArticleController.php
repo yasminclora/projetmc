@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Robe;
 use App\Models\Bijoux;
+
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller

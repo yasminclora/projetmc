@@ -211,12 +211,61 @@
             margin-bottom: 10px;
         }
     }
+
+
+
+    .btn-voir-detail {
+    background-color: #6d4c41;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+}
+
+.btn-voir-detail:hover {
+    background-color: #3e2723;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-voir-detail:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.btn{
+            background-color: #6d4c41;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn:hover {
+            background-color: #3e2723;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btnactive {
+            transform: translateY(0);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
 </style>
 
 <body>
-    
 <nav>
-    <h1>Boutique de Bijoux et Robes</h1>
+<h1>Boutique de Robes Kabyle et Accessoires</h1>
     <div class="onglet">
     <ul>
     <li>
@@ -257,6 +306,7 @@
         </li>
     @endguest
 </ul>
+
     </div>
 </nav>
 
@@ -279,17 +329,26 @@
     Ajouter au panier
 </button>
 
-            </div>
+
+<a href="{{ route('robes.detail', ['id' => $robe->id]) }}" class="btn-ajouter-panier">Voir les détails</a>
+
+       </div>
             @endforeach
         </div>
         @endforeach
     </section>
 
-    <footer>
-        <p>&copy; 2025 Boutique de Robes. Tous droits réservés.</p>
-    </footer>
+   
 
     <script>
+         @auth
+        // Passer l'ID de l'utilisateur connecté dans une variable JavaScript
+        const currentUserId = {{ auth()->user()->id }};
+    @else
+        // Si l'utilisateur n'est pas authentifié, currentUserId sera null
+        const currentUserId = null;
+    @endauth
+
         function filterRobes(category) {
             document.querySelectorAll('.robe-category').forEach(cat => {
                 cat.style.display = cat.id.includes(category) ? 'flex' : 'none';
@@ -302,35 +361,49 @@
         }
 
         function ajouterAuPanier(id, nom, prix, image, vendeurId) {
-    // Récupérer l'ID de l'utilisateur connecté (que vous passez depuis le backend)
-    const currentUserId = @auth {{ auth()->user()->id }} @endauth;
-    // Vous pouvez utiliser cette syntaxe pour obtenir l'ID du vendeur dans le backend
-
-    // Vérifier si l'acheteur est le vendeur
-    if (currentUserId === vendeurId) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Vous ne pouvez pas acheter votre propre robe.',
-            timer: 2000,
-            showConfirmButton: false,
+           // Vérifier si l'utilisateur est authentifié
+        if (currentUserId === null) {
+            Swal.fire({
+            icon: 'info',
+            title: 'Connexion requise',
+            text: 'Veuillez vous connecter pour ajouter des articles au panier',
+            showCancelButton: true,
+            confirmButtonText: 'Se connecter',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
         });
-        return; // Empêcher l'ajout au panier si l'utilisateur est le vendeur
-    }
+        return; // Empêcher l'ajout au panier si l'utilisateur n'est pas connecté
+        }
+           
+           
+            // Vérifier si l'acheteur est le vendeur
+            if (currentUserId === vendeurId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Vous ne pouvez pas acheter votre propre robe.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                return; // Empêcher l'ajout au panier si l'utilisateur est le vendeur
+            }
 
-    // Si ce n'est pas l'article du vendeur, on continue normalement
-    let panier = JSON.parse(localStorage.getItem('panier')) || [];
-    let item = panier.find(item => item.id === id);
+            // Si ce n'est pas l'article du vendeur, on continue normalement
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            let item = panier.find(item => item.id === id);
 
-    if (item) {
-        item.quantite += 1;
-    } else {
-        panier.push({ id, nom, prix, image, quantite: 1 });
-    }
+            if (item) {
+                item.quantite += 1;
+            } else {
+                panier.push({ id, nom, prix, image, quantite: 1 });
+            }
 
-    localStorage.setItem('panier', JSON.stringify(panier));
-    alert(`${nom} ajouté au panier !`);
-}
+            localStorage.setItem('panier', JSON.stringify(panier));
+            alert(`${nom} ajouté au panier !`);
+        }
 
         window.onload = () => filterRobes('simple');
     </script>

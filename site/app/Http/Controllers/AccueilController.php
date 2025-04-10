@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Robe; // Modèle Robe
 use App\Models\Bijoux; // Modèle Bijoux
+use App\Models\User;
 
 class AccueilController extends Controller
 {

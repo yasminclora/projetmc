@@ -4,52 +4,79 @@
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Barre latérale à gauche -->
-        <div class="col-md-3 col-lg-2 p-0 bg-white text-dark" style="height: 100vh;">
-            <div class="d-flex flex-column align-items-start p-3">
-                <!-- Titre de la section à gauche -->
-                <h5 class="mb-4">Mon Compte</h5>
+      <!-- Barre latérale à gauche -->
+<!-- Barre latérale à gauche -->
+<div class="col-md-4 col-lg-3 p-0 bg-white text-dark" style="height: 100vh;">
+    <div class="d-flex flex-column align-items-start p-3">
+        <!-- Titre de la section à gauche -->
+        <h5 class="mb-4">Mon Compte</h5>
 
-                <!-- Boutons de navigation avec icônes -->
-                <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('profile')">
-                    <i class="fas fa-user-circle"></i> Profil
-                </button>
-                <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('mesCommandes')">
-                    <i class="fas fa-box"></i> Mes Commandes
-                </button>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="vendeurSwitch" onchange="toggleVendeurMode()" />
-                    <label class="form-check-label" for="vendeurSwitch" id="vendeurSwitchLabel">Activer le mode vendeur</label>
-                </div>
-                <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('ajouterRobe')" id="ajouterRobeBtn" style="display: none;">
-                    <i class="fas fa-tshirt"></i> Ajouter une robe
-                </button>
-                <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('ajouterBijou')" id="ajouterBijouBtn" style="display: none;">
-                    <i class="fas fa-gem"></i> Ajouter un accessoire
-                </button>
-                <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('commandesRecues')" id="commandesRecuesBtn" style="display: none;">
-                    <i class="fas fa-box-open"></i> Commandes reçues
-                </button>
-                <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('mesArticles')" id="mesArticlesBtn" style="display: none;">
-                    <i class="fas fa-clipboard-list"></i> Voir mes articles
-                </button>
 
-                <!-- Déconnexion -->
-                <a href="{{ route('logout') }}" 
-                   onclick="event.preventDefault(); 
-                            localStorage.removeItem('panier'); 
-                            document.getElementById('logout-form').submit();" 
-                   class="btn btn-logout w-100 mt-4">
-                    Se déconnecter
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            </div>
+        
+
+        <!-- Boutons de navigation avec icônes -->
+        <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('profile')">
+            <i class="fas fa-user-circle"></i> Profil
+        </button>
+        <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('mesCommandes')">
+            <i class="fas fa-box"></i> Mes Commandes
+        </button>
+
+
+         <!-- Notifications Commandes Validées -->
+<button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('notificationProp')" id="notificationPropBtn">
+    <i class="fas fa-bell"></i> Notification validée
+    @if(auth()->user()->unreadNotifications->where('type', 'App\Notifications\CommandeValideeNotification')->count())
+        <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->where('type', 'App\Notifications\CommandeValideeNotification')->count() }}</span>
+    @endif
+</button>
+
+
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="vendeurSwitch" onchange="toggleVendeurMode()" />
+            <label class="form-check-label" for="vendeurSwitch" id="vendeurSwitchLabel">Activer le mode vendeur</label>
         </div>
+        <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('ajouterRobe')" id="ajouterRobeBtn" style="display: none;">
+            <i class="fas fa-tshirt"></i> Ajouter robe
+        </button>
+        <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('ajouterBijou')" id="ajouterBijouBtn" style="display: none;">
+            <i class="fas fa-gem"></i> Ajouter accessoire
+        </button>
+       
+
+      
+  <!-- Notifications Commandes Reçues -->
+  <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('notificationRecu')" id="notificationRecuBtn" style="display: none;">
+                    <i class="fas fa-bell"></i>Notification Reçu
+                    @if(auth()->user()->unreadNotifications->where('type', 'App\Notifications\NotificationProprietaireCommande')->count())
+                        <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->where('type', 'App\Notifications\NotificationProprietaireCommande')->count() }}</span>
+                    @endif
+                </button>
+
+        <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('commandesRecues')" id="commandesRecuesBtn" style="display: none;">
+            <i class="fas fa-box-open"></i> Commandes reçues
+        </button>
+        <button class="btn btn-white w-100 mb-3 menu-btn" onclick="showSection('mesArticles')" id="mesArticlesBtn" style="display: none;">
+            <i class="fas fa-clipboard-list"></i> Voir mes articles
+        </button>
+
+        <!-- Déconnexion -->
+        <a href="{{ route('logout') }}" 
+           onclick="event.preventDefault(); 
+                    localStorage.removeItem('panier'); 
+                    document.getElementById('logout-form').submit();" 
+           class="btn btn-logout w-100 mt-4">
+            Se déconnecter
+        </a>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+    </div>
+</div>
 
         <!-- Section principale à droite -->
-        <div class="col-md-9 col-lg-10 p-4" id="content-section">
+<!-- Section principale à droite -->
+<div class="col-md-8 col-lg-7 p-4" id="content-section">
             <!-- Profil utilisateur -->
             <div id="profile-section" style="display: none;">
                 <h2 class="mb-3">Profil de {{ Auth::user()->name }}</h2>
@@ -69,6 +96,26 @@
                     <i class="fas fa-eye"></i> Voir mes commandes
                 </a>
             </div>
+
+
+
+            <!-- Notifications Commandes Validées -->
+<div id="notificationProp-section" style="display: none;">
+    <h2 class="mb-3">Notifications Commandes Validées</h2>
+    <a href="{{ route('notifications.validated', ['type' => 'App\Notifications\CommandeValideeNotification']) }}" class="btn btn-maroon">
+        <i class="fas fa-bell"></i> Voir les Notifications
+    </a>
+</div>
+
+
+            <!-- Notifications Commandes Reçues -->
+            <div id="notificationRecu-section" style="display: none;">
+                <h2 class="mb-3">Notifications Commandes Reçues</h2>
+                <a href="{{ route('notifications.received', ['type' => 'App\Notifications\NotificationProprietaireCommande']) }}" class="btn btn-maroon">
+                    <i class="fas fa-bell"></i> Voir les Notifications
+                </a>
+            </div>
+
 
             <!-- Ajouter une robe -->
             <div id="ajouterRobe-section" style="display: none;">
@@ -143,6 +190,9 @@
                 </form>
             </div>
 
+
+
+            
             <!-- Commandes reçues -->
             <div id="commandesRecues-section" style="display: none;">
                 <h2 class="mb-3">Commandes reçues</h2>
@@ -150,6 +200,10 @@
                     <i class="fas fa-box-open"></i> Voir les commandes reçues
                 </a>
             </div>
+
+
+
+ 
 
             <!-- Voir mes articles -->
             <div id="mesArticles-section" style="display: none;">
@@ -162,7 +216,14 @@
     </div>
 </div>
 
+
+
+
+
 <script>
+
+
+
     function showSection(sectionId) {
         // Masquer toutes les sections
         const sections = document.querySelectorAll('#content-section > div');
@@ -194,25 +255,47 @@
     }
 
     function updateVendeurUI() {
-        const isActive = isVendeurModeActive();
-        document.getElementById('vendeurSwitch').checked = isActive;
-        document.getElementById('vendeurSwitchLabel').textContent = isActive ? 'Désactiver le mode vendeur' : 'Activer le mode vendeur';
+    const isActive = isVendeurModeActive();
+    document.getElementById('vendeurSwitch').checked = isActive;
+    document.getElementById('vendeurSwitchLabel').textContent = isActive ? 'Désactiver le mode vendeur' : 'Activer le mode vendeur';
 
-        document.getElementById('ajouterRobeBtn').style.display = isActive ? 'block' : 'none';
-        document.getElementById('ajouterBijouBtn').style.display = isActive ? 'block' : 'none';
-        document.getElementById('commandesRecuesBtn').style.display = isActive ? 'block' : 'none';
-        document.getElementById('mesArticlesBtn').style.display = isActive ? 'block' : 'none';
-    }
+    // Affichage des boutons liés au mode vendeur
+    document.getElementById('ajouterRobeBtn').style.display = isActive ? 'block' : 'none';
+    document.getElementById('ajouterBijouBtn').style.display = isActive ? 'block' : 'none';
+    
+    document.getElementById('notificationRecuBtn').style.display = isActive ? 'block' : 'none';
+    document.getElementById('commandesRecuesBtn').style.display = isActive ? 'block' : 'none';
+
+    document.getElementById('mesArticlesBtn').style.display = isActive ? 'block' : 'none';
+}
+
 
     document.addEventListener('DOMContentLoaded', () => {
         // Assurer que le mode vendeur est désactivé au départ
-        localStorage.setItem('vendeurMode', 'false');
+      
         updateVendeurUI();
         showSection('profile'); // Afficher le profil par défaut
     });
 </script>
 
 <style>
+
+
+#notifications-section {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.list-group-item {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.list-group-item p {
+    margin: 0;
+}
+
     .btn-maroon {
         border: none;
         background-color: transparent;
@@ -234,6 +317,18 @@
         font-size: 16px;
         text-align: left;
     }
+
+    /* Agrandir la barre latérale */
+#sidebar {
+    width: 350px; /* Définit une largeur personnalisée */
+}
+
+@media (max-width: 768px) {
+    #sidebar {
+        width: 100%; /* Sur les petits écrans, occupe toute la largeur */
+    }
+}
+
 
     .menu-btn:hover {
         background-color: #f5f5f5;

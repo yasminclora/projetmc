@@ -147,8 +147,8 @@
 
    
 <nav>
-    <h1>Boutique de Bijoux et Robes</h1>
-    <div class="onglet">
+<h1>Boutique de Robes Kabyle et accessoires</h1>
+<div class="onglet">
     <ul>
     <li>
         <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">
@@ -199,9 +199,7 @@
     <div id="total-price" class="total">Total : 0 DA</div>
     <button class="btn-commander" onclick="validerCommande()">Commander</button>
 
-    <footer>
-        <p>&copy; 2025 Boutique de Robes et Bijoux. Tous droits réservés.</p>
-    </footer>
+   
 
     <script>
 

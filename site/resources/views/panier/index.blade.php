@@ -10,11 +10,12 @@
 
     <style>
         body {
-            font-family: 'Georgia', serif;
+            font-family: 'Georgia', 'Times New Roman', Times, serif;
             background-color: #f5f5f5;
             margin: 0;
             padding: 20px;
         }
+
         nav {
             display: flex;
             justify-content: space-between;
@@ -23,28 +24,30 @@
             background-color: #fff;
             border-bottom: 2px solid #ccc;
         }
+
         nav h1 {
             color: saddlebrown;
+            font-family: 'Playfair Display', serif;
             font-size: 30px;
         }
+
         nav .onglet ul {
             list-style-type: none;
             padding: 0;
+            display: flex;
+            flex-wrap: wrap;
         }
+
         nav .onglet li {
-            display: inline-block;
             margin-right: 20px;
         }
+
         nav .onglet a {
             text-decoration: none;
             color: tan;
             font-weight: bold;
             transition: color 0.3s;
         }
-        nav .onglet a:hover {
-            color: saddlebrown;
-        }
-
 
         nav .onglet a:hover,
         .onglet a.active {
@@ -147,7 +150,7 @@
 
    
 <nav>
-    <h1>Boutique de Bijoux et Robes</h1>
+<h1>Boutique de Robes Kabyle et Accessoires</h1>
     <div class="onglet">
     <ul>
     <li>
@@ -199,10 +202,7 @@
     <div id="total-price" class="total">Total : 0 DA</div>
     <button class="btn-commander" onclick="validerCommande()">Commander</button>
 
-    <footer>
-        <p>&copy; 2025 Boutique de Robes et Bijoux. Tous droits réservés.</p>
-    </footer>
-
+  
     <script>
         // Afficher le panier au chargement de la page
         window.onload = afficherPanier;

@@ -33,7 +33,7 @@
                     <tr>
                         <td>{{ $commande->reference }}</td>
                         <td>{{ $commande->created_at->format('d/m/Y H:i') }}</td>
-                        <td>{{ $commande->user->name }}</td>
+                        <td>{{ $commande->user->email }}</td>
                         <td>
                             <ul class="list-unstyled">
                                 @foreach($itemsVendeur as $item)

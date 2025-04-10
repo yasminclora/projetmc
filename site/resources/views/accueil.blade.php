@@ -170,53 +170,57 @@
     </style>
 </head>
 <body>
-    <nav>
-        <h1>Boutique de Bijoux et Robes</h1>
-        <div class="onglet">
-            <ul>
-                <li>
-                    <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">
-                        <i class="fas fa-home"></i> Accueil
-                    </a>
-                </li>
-                <li>
-                    <a href="/robe" class="{{ request()->is('robe') ? 'active' : '' }}">
-                        <i class="fas fa-tshirt"></i> Robes
-                    </a>
-                </li>
-                <li>
-                    <a href="/bijoux" class="{{ request()->is('bijoux') ? 'active' : '' }}">
-                        <i class="fas fa-gem"></i> Accessoires
-                    </a>
-                </li>
-                <li>
-                    <a href="/panier" class="{{ request()->is('panier') ? 'active' : '' }}">
-                        <i class="fas fa-shopping-cart"></i> Panier
-                    </a>
-                </li>
-                @auth
-                    <li>
-                        <a href="{{ route('profile.show') }}" class="{{ request()->is('profile') ? 'active' : '' }}">
-                            <i class="fas fa-user"></i> Profil
-                        </a>
-                    </li>
-                @endauth
-                @guest
-                    <li>
-                        <a href="{{ route('login') }}">
-                            <i class="fas fa-sign-in-alt"></i> Se connecter
-                        </a>
-                    </li>
-                @endguest
-            </ul>
-        </div>
-    </nav>
+<nav>
+<h1>Boutique de Robes Kabyle et Accessoires</h1>
+    <div class="onglet">
+    <ul>
+    <li>
+        <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">
+            <i class="fas fa-home"></i> Accueil
+        </a>
+    </li>
+    <li>
+        <a href="/robe" class="{{ request()->is('robe') ? 'active' : '' }}">
+            <i class="fas fa-tshirt"></i> Robes
+        </a>
+    </li>
+    <li>
+        <a href="/bijoux" class="{{ request()->is('bijoux') ? 'active' : '' }}">
+            <i class="fas fa-gem"></i> Accessoires
+        </a>
+    </li>
+    <li>
+        <a href="/panier" class="{{ request()->is('panier') ? 'active' : '' }}">
+            <i class="fas fa-shopping-cart"></i> Panier
+        </a>
+    </li>
+    <!-- Lien "Profil" visible uniquement pour les utilisateurs connectés -->
+    @auth
+        <li>
+            <a href="{{ route('profile.show') }}" class="{{ request()->is('profile') ? 'active' : '' }}">
+                <i class="fas fa-user"></i> Profil
+            </a>
+        </li>
+    @endauth
+
+    <!-- Lien "Se connecter" visible uniquement pour les utilisateurs non connectés -->
+    @guest
+        <li>
+            <a href="{{ route('login') }}">
+                <i class="fas fa-sign-in-alt"></i> Se connecter
+            </a>
+        </li>
+    @endguest
+</ul>
+
+    </div>
+</nav>
 
     <header id="accueil">
         <div class="titre">
             <h1>SYKabyle,</h1>
         </div>
-        <h4>LE MEILLEUR Site d'achat de robe kabyle et Bijoux</h4>
+        <h4>LE MEILLEUR Site d'achat de robe kabyle et Accessoires</h4>
     </header>
 
 
@@ -226,7 +230,7 @@
         <select name="type" id="type" required>
             <option value="">Choisir</option>
             <option value="robe">Robe</option>
-            <option value="bijoux">Bijoux</option>
+            <option value="bijoux">Accessoires</option>
         </select>
 
         <label for="category">Catégorie :</label>
@@ -301,7 +305,7 @@
     </div>
     <div style="background-color: #f5f5f5; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 200px; text-align: center;">
         <a href="/bijoux" style="background-color: saddlebrown; color: white; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background-color 0.3s, transform 0.3s; font-size: 16px;">
-            Voir Bijoux
+            Voir Accessoires
         </a>
     </div>
 </div>
@@ -310,6 +314,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+
+@auth
+        // Passer l'ID de l'utilisateur connecté dans une variable JavaScript
+        const currentUserId = {{ auth()->user()->id }};
+    @else
+        // Si l'utilisateur n'est pas authentifié, currentUserId sera null
+        const currentUserId = null;
+    @endauth
+
     const typeSelect = document.getElementById('type');
     const categorySelect = document.getElementById('category');
 
@@ -342,39 +355,49 @@
     });
 
     function ajouterAuPanier(id, nom, prix, image, vendeurId) {
-    let panier = JSON.parse(localStorage.getItem('panier')) || [];
-    
-    // Vérifiez si l'acheteur est le vendeur
-    const currentUserId = @auth {{ auth()->user()->id }} @endauth;
-
-    if (currentUserId === vendeurId) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Vous ne pouvez pas acheter votre propre article.',
-            timer: 2000,
-            showConfirmButton: false,
+           // Vérifier si l'utilisateur est authentifié
+        if (currentUserId === null) {
+            Swal.fire({
+            icon: 'info',
+            title: 'Connexion requise',
+            text: 'Veuillez vous connecter pour ajouter des articles au panier',
+            showCancelButton: true,
+            confirmButtonText: 'Se connecter',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
         });
-        return; // Empêche l'ajout au panier si l'acheteur est le vendeur
-    }
+        return;// Empêcher l'ajout au panier si l'utilisateur n'est pas connecté
+        }
+           
+           
+            // Vérifier si l'acheteur est le vendeur
+            if (currentUserId === vendeurId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Vous ne pouvez pas acheter votre propre robe.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                return; // Empêcher l'ajout au panier si l'utilisateur est le vendeur
+            }
 
-    let item = panier.find(item => item.id === id);
+            // Si ce n'est pas l'article du vendeur, on continue normalement
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            let item = panier.find(item => item.id === id);
 
-    if (item) {
-        item.quantite += 1;
-    } else {
-        panier.push({ id, nom, prix, image, quantite: 1 });
-    }
+            if (item) {
+                item.quantite += 1;
+            } else {
+                panier.push({ id, nom, prix, image, quantite: 1 });
+            }
 
-    localStorage.setItem('panier', JSON.stringify(panier));
-    Swal.fire({
-        icon: 'success',
-        title: 'Article ajouté !',
-        text: `${nom} a été ajouté au panier.`,
-        timer: 2000,
-        showConfirmButton: false,
-    });
-}
+            localStorage.setItem('panier', JSON.stringify(panier));
+            alert(`${nom} ajouté au panier !`);
+        }
 
 
 </script>

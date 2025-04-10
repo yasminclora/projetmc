@@ -6,19 +6,28 @@ use App\Models\Robe;
 use App\Models\Bijoux;
 use App\Models\Commande;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
+
+    public function show()
+    {
+        $user = Auth::user();
+        return view('ad', compact('user'));
+    }
+
+    
     /**
      * Affiche le tableau de bord administrateur.
      */
     public function index()
     {
-        $robes = Robe::all();
-        $bijoux = Bijoux::all();
+        $robes = Robe::with('user')->get();
+        $bijoux = Bijoux::with('user')->get();
         $commandes = Commande::all(); // Version simple
         
-        return view('admin', compact('robes', 'bijoux', 'commandes'));
+        return view('ad', compact('robes', 'bijoux', 'commandes'));
     }
 
     /**
