@@ -20,7 +20,9 @@ use App\Notifications\CommandeValideeNotification;
 class CommandeController extends Controller
 {
     
-    
+
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -197,69 +199,110 @@ protected function determineArticleType($id, $nom = '')
     }
 
 
-    public function updateStatutsParCommande(Request $request, $commandeId)
+  
+public function updateStatutsParCommande(Request $request, $commandeId)
 {
     $request->validate([
         'statut' => 'required|in:en_attente,validee,refusee',
     ]);
 
-    $items = CommandeItem::where('commande_id', $commandeId)
-                ->whereHas('article', function ($query) {
-                    $query->where('user_id', auth()->id());
-                })->get();
+    \DB::beginTransaction();
+    try {
+        $user = auth()->user();
+        $items = CommandeItem::where('commande_id', $commandeId)
+                    ->whereHas('article', function ($query) use ($user) {
+                        $query->where('user_id', $user->id);
+                    })
+                    ->with(['article', 'commande'])
+                    ->lockForUpdate()
+                    ->get();
 
-    foreach ($items as $item) {
-        $article = $item->article;
-        $ancienStatut = $item->statut;
-        $nouveauStatut = $request->statut;
+        if ($items->isEmpty()) {
+            return back()->with('error', 'Aucun article trouvé pour cette commande.');
+        }
 
-        // Transition vers "validee" : diminuer stock
-        if ($ancienStatut !== 'validee' && $nouveauStatut === 'validee') {
-            if ($article->quantite >= $item->quantite) {
-                $article->quantite -= $item->quantite;
+        $commande = $items->first()->commande;
+        $ruptureArticles = [];
+
+        foreach ($items as $item) {
+            $article = $item->article;
+            $ancienStatut = $item->statut;
+            $nouveauStatut = $request->statut;
+
+            if ($nouveauStatut === 'validee') {
+                if ($article->quantite < $item->quantite) {
+                    // Stock insuffisant → refus automatique
+                    $item->statut = 'refusee';
+                    $item->save();
+
+                    $ruptureArticles[] = "{$article->nom} (stock: {$article->quantite}, demandé: {$item->quantite})";
+                    continue;
+                }
+
+                if ($ancienStatut !== 'validee') {
+                    $article->quantite -= $item->quantite;
+                    $article->save();
+                }
+            } elseif ($ancienStatut === 'validee' && $nouveauStatut !== 'validee') {
+                // Restaurer le stock si on passe de "validee" à autre chose
+                $article->quantite += $item->quantite;
                 $article->save();
-            } else {
-                return back()->with('error', "Stock insuffisant pour l'article {$item->article_nom}.");
+            }
+
+            // Mise à jour du statut si pas rupture
+            if ($article->quantite >= $item->quantite) {
+                $item->statut = $nouveauStatut;
+                $item->save();
             }
         }
 
-        // Transition depuis "validee" vers autre chose : restaurer stock
-        if ($ancienStatut === 'validee' && $nouveauStatut !== 'validee') {
-            $article->quantite += $item->quantite;
-            $article->save();
+        // Mise à jour du statut global de la commande
+        $allItems = $commande->items;
+        $allValidated = $allItems->every(fn($i) => $i->statut === 'validee');
+        $allRefused = $allItems->every(fn($i) => $i->statut === 'refusee');
+
+        $allAttente = $allItems->every(fn($i) => $i->statut === 'en_attente');
+        if ($allValidated) {
+            $commande->statut = 'validee';
+
+            
+            $commande->user->notify(new CommandeValideeNotification($commande));
+        } elseif ($allRefused) {
+            $commande->statut = 'refusee';
+        }
+        
+    elseif ($allAttente) {
+        $commande->statut = 'en_attente';
+    }
+    else {
+            $commande->statut = 'validee';
         }
 
-        // Mettre à jour le statut de l'article
-        $item->statut = $nouveauStatut;
-        $item->save();
-        
+
+        // Nouvelle condition : si la commande est validée et tous les paiements sont faits
+$allPayees = $allItems->every(fn($i) => $i->paiement === 'payee');
+if ($commande->statut === 'validee' && $allPayees) {
+    $commande->statut = 'payee';
+}
+
+
+        $commande->save();
+        \DB::commit();
+
+        if (!empty($ruptureArticles)) {
+            $msg = "Rupture de stock pour les articles suivants :<br>" . implode('<br>', $ruptureArticles);
+            return back()->with('error', $msg);
+        }
+
+        return back()->with('success', 'Statut mis à jour avec succès.');
+
+    } catch (\Exception $e) {
+        \DB::rollBack();
+        return back()->with('error', 'Une erreur est survenue : ' . $e->getMessage());
     }
-
-    // Mise à jour du statut global de la commande
-    $commande = $items->first()->commande;
-
-    $allValidated = $commande->items->every(function ($item) {
-        return $item->statut === 'validee';
-    });
-
-    $commande->statut = $allValidated ? 'validee' : 'en_attente';
-    $commande->save();
-
-// Vérifie si la commande est validée
-if ($commande->statut === 'validee') {
-
-    // Notification à l'utilisateur qui a passé la commande
-// Envoi de la notification de validation
-$commande->user->notify(new CommandeValideeNotification($commande));
-
 }
-    return back()->with('success', 'Statut mis à jour et stock ajusté si nécessaire.');
-}
+
+
 
     
-
-
-
-
-
-}
+} 

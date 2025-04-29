@@ -28,7 +28,8 @@ Route::get('/ad', [AdminController::class, 'show'])->name('ad.show')->middleware
 
 // Modifier le profil
 Route::get('/edit', [ProfileController::class, 'edit'])->name('edit')->middleware('auth');
-Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
+Route::put('/profile/edit', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
+
 
 
 /*
@@ -42,9 +43,6 @@ Route::put('/robe/{id}', [RobeController::class, 'update'])->name('robes.update'
 
 // Route pour le tableau de bord admin
 Route::get('/admin', [AdminController::class, 'index'])->name('admin');
-
-
-
 
 Route::get('/ad', [AdminController::class, 'index'])->name('ad');
 
@@ -72,11 +70,37 @@ Route::delete('/admin/bijoux/{id}', [AdminController::class, 'destroyBijoux'])->
 
 
 
-
-
-
 // Routes pour les commandes
 Route::put('/admin/commandes/{commande}', [AdminController::class, 'updateCommande'])->name('admin.commandes.update');
+
+
+Route::prefix('admin')->group(function () {
+    // ... autres routes admin ...
+    
+    // Route pour supprimer un utilisateur
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+    
+    // Route pour modifier un utilisateur (doit être PUT)
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
+});
+
+
+
+
+
+
+
+
+
+
+
+use App\Http\Controllers\PaiementController;
+
+Route::post('/paiement/article/{itemId}', [PaiementController::class, 'payerArticle'])->name('paiement.article');
+
+
+
+    
 //commandes recu pour chaque user 
 Route::get('/commandes-recues', [CommandeController::class, 'commandesRecues'])
     ->name('commandes_recues')
@@ -98,10 +122,14 @@ Route::get('robe/{id}', [RobeController::class, 'show'])->name('robes.detail');
 Route::post('/robe/{id}/commentaire', [RobeController::class, 'addComment'])->name('robes.addComment');
 
 
-Route::post('/robes/{id}/commentaires', [RobeController::class, 'addComment'])->name('commentaires.store');
-Route::get('/commentaires/{id}/edit', [RobeController::class, 'editComment'])->name('commentaires.edit');
-Route::put('/commentaires/{id}', [RobeController::class, 'updateComment'])->name('commentaires.update');
+Route::post('/robes/{id}/commentaires', [RobeController::class, 'addComment'])->name('robes.commentaires.store');
+Route::get('/commentaires/{id}/edit', [RobeController::class, 'editComment'])->name('robes.commentaires.edit');
+Route::put('/commentaires/{id}', [RobeController::class, 'updateComment'])->name('robes.commentaires.update');
 Route::delete('/commentaires/{id}', [RobeController::class, 'destroyComment'])->name('commentaires.destroy');
+
+
+
+Route::put('/robe/{robeId}/commentaires/{commentaireId}', [RobeController::class, 'updateComment'])->name('robes.commentaires.update');
 
 
 //comment pour bijou
@@ -223,9 +251,11 @@ Route::get('/ajouter-bijoux', function () {
 
 
 
+// Routes accessibles aux utilisateurs non authentifiés (pour voir le panier)
+Route::get('/panier', [PanierController::class, 'index'])->name('panier.index');
+
+// Routes sécurisées par l'authentification (ajout, mise à jour, suppression et commande)
 Route::middleware(['auth'])->group(function () {
-    // Panier
-    Route::get('/panier', [PanierController::class, 'index'])->name('panier.index');
     Route::post('/panier/ajouter', [PanierController::class, 'ajouter'])->name('panier.ajouter');
     Route::post('/panier/{item}/update', [PanierController::class, 'update'])->name('panier.update');
     Route::delete('/panier/{item}/remove', [PanierController::class, 'remove'])->name('panier.remove');
@@ -238,12 +268,29 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+
 Route::post('/commander', [CommandeController::class, 'store'])->name('commander.store');
 Route::get('/confirmation-commande', [CommandeController::class, 'confirmation'])->name('commande.confirmation');
 
 
 
 
+//payer tt lac ommande
+Route::post('/paiement/commande/{commande}', [PaiementController::class, 'payCommande']);
 
 
 
+use App\Http\Controllers\SignalementController;
+Route::post('/signalement/{type}/{id}', [SignalementController::class, 'store'])->name('signalement.store');
+
+
+
+Route::post('/signalement/{id}/ignore', [SignalementController::class, 'ignore'])->name('signalement.ignore');
+Route::delete('/signalement/{id}/supprimer', [SignalementController::class, 'supprimerArticle'])->name('signalement.supprimerArticle');
+
+
+
+
+Route::post('/admin/payer-par-article', [AdminController::class, 'payerParArticle'])->name('admin.payerParArticle');
+
+Route::post('/signalements/{id}/marquer-vu', [SignalementController::class, 'marquerVu']);

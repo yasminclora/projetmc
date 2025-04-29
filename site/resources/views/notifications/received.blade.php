@@ -37,7 +37,9 @@
 
                         <div class="card-body">
                             <div class="row">
-                                @foreach($data['articles'] as $article)
+                            @foreach($data['articles'] as $article)
+    @if($article['user_id'] === Auth::id())
+
                                     @php
                                         $imageUrl = $article['article_image_url'] ?? asset('images/default-product.jpg');
                                     @endphp
@@ -66,7 +68,9 @@
                                             </span>
                                         </div>
                                     </div>
-                                @endforeach
+                                    @endif
+@endforeach
+
                             </div>
                         </div>
 
@@ -109,7 +113,9 @@
 
                         <div class="card-body">
                             <div class="row">
-                                @foreach($data['articles'] as $article)
+                            @foreach($data['articles'] as $article)
+    @if($article['user_id'] === Auth::id())
+
                                     @php
                                         $imageUrl = $article['article_image_url'] ?? asset('images/default-product.jpg');
                                     @endphp
@@ -138,7 +144,9 @@
                                             </span>
                                         </div>
                                     </div>
-                                @endforeach
+                                    @endif
+@endforeach
+
                             </div>
                         </div>
 

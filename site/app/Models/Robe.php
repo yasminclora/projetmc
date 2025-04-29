@@ -36,5 +36,12 @@ public function user()
     {
         return $this->morphMany(Commentaire::class, 'commentable');
     }
+
+
+    public function signalements()
+{
+    return $this->morphMany(Signalement::class, 'signalable');
+}
+
 }
 

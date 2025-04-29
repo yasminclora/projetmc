@@ -29,4 +29,16 @@ class CommandeItem extends Model
 
     
 
+    // Dans le modèle CommandeItem
+public function robe()
+{
+    return $this->belongsTo(Robe::class, 'article_id');
+}
+
+public function bijou()
+{
+    return $this->belongsTo(Bijou::class, 'article_id');
+}
+
+
 }

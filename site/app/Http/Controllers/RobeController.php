@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Robe;
+
 use App\Models\Bijoux;
 use App\Models\Commentaire;
 use App\Models\User;
@@ -149,11 +150,14 @@ public function show($id)
 }
 
 // Ajouter un commentaire
+
 public function addComment(Request $request, $id)
 {
     $request->validate([
         'commentaire' => 'required|string|max:1000',
     ]);
+
+    
 
     $robe = Robe::findOrFail($id);
     $robe->commentaires()->create([
@@ -178,25 +182,28 @@ public function editComment($id)
 }
 
 // Mettre à jour un commentaire
-public function updateComment(Request $request, $id)
+
+public function updateComment(Request $request, $robeId, $commentaireId)
 {
     $request->validate([
         'commentaire' => 'required|string|max:1000',
     ]);
 
-    $commentaire = Commentaire::findOrFail($id);
+    // Trouver le commentaire à mettre à jour
+    $commentaire = Commentaire::findOrFail($commentaireId);
 
     // Assurez-vous que l'utilisateur est le propriétaire du commentaire
     if (auth()->user()->id != $commentaire->user_id) {
         return redirect()->back()->with('error', 'Vous n\'avez pas la permission de modifier ce commentaire.');
     }
 
+    // Mise à jour du commentaire
     $commentaire->update([
         'commentaire' => $request->commentaire,
     ]);
 
-    $robe = $commentaire->commentable;
-    return redirect()->route('robes.detail', ['id' => $robe->id])
+    // Rediriger vers la page de la robe
+    return redirect()->route('robes.detail', ['id' => $robeId])
                      ->with('success', 'Commentaire modifié avec succès.');
 }
 

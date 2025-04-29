@@ -11,6 +11,20 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-button@4.5.0/dist/index.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-button@4.5.0/dist/index.css">
 
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    
+
     <style>
         body {
             font-family: 'Georgia', 'Times New Roman', Times, serif;
@@ -146,7 +160,7 @@
         <h3>{{ $bijoux->nom }}</h3>
         <p class="price">{{ $bijoux->prix }} DA</p>
         <button class="btn-ajouter-panier" onclick="ajouterAuPanier({{ $bijoux->id }}, '{{ $bijoux->nom }}', '{{ $bijoux->prix }}', '{{ asset('storage/' . $bijoux->image) }}', {{ $bijoux->user_id }})">
-            Ajouter au panier
+        <i class="fas fa-shopping-cart"></i> Ajouter au panier
         </button>
     </div>
 

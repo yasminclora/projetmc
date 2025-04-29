@@ -26,35 +26,51 @@
         function annulerModificationBijoux(id) {
             document.getElementById('form-bijoux-' + id).style.display = 'none';
         }
+
+        function afficherFormUser(id) {
+        document.getElementById('form-user-' + id).style.display = 'block';
+    }
+
+    function annulerModificationUser(id) {
+        document.getElementById('form-user-' + id).style.display = 'none';
+    }
     </script>
 </head>
 <body>
     <div class="container mt-4">
         <h2 class="text-center mb-4">Tableau de Bord Administrateur</h2>
 
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card" onclick="afficherSection('robes')">
-                    <div class="card-body text-center">
-                        <h5>Robes</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card" onclick="afficherSection('bijoux')">
-                    <div class="card-body text-center">
-                        <h5>Bijoux</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card" onclick="afficherSection('commandes')">
-                    <div class="card-body text-center">
-                        <h5>Commandes</h5>
-                    </div>
-                </div>
+       <!-- Dans la partie cartes de navigation -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="card" onclick="afficherSection('robes')">
+            <div class="card-body text-center">
+                <h5>Robes</h5>
             </div>
         </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" onclick="afficherSection('bijoux')">
+            <div class="card-body text-center">
+                <h5>Bijoux</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" onclick="afficherSection('commandes')">
+            <div class="card-body text-center">
+                <h5>Commandes</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" onclick="afficherSection('utilisateurs')">
+            <div class="card-body text-center">
+                <h5>Utilisateurs</h5>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Section Robes -->
         <div id="section-robes" class="section mt-4" style="display:none;">
@@ -265,6 +281,67 @@
         </div>
     @endif
 </div>
+
+
+<!-- Ajoutez cette section après les autres sections -->
+<div id="section-utilisateurs" class="section mt-4" style="display:none;">
+    <h2>Gestion des Utilisateurs</h2>
+    
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Date d'inscription</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($users as $user)
+            <tr>
+                <td>{{ $user->id }}</td>
+                <td>{{ $user->name }}</td>
+                <td>{{ $user->email }}</td>
+                <td>{{ $user->role ?? 'Utilisateur' }}</td>
+                <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
+                <td>
+                    
+                
+                    
+                    <button class="btn btn-warning btn-sm" onclick="afficherFormUser({{ $user->id }})">Modifier</button>
+                    
+                    <!-- Formulaire caché de modification -->
+                    <form id="form-user-{{ $user->id }}" action="{{ route('admin.users.update', $user->id) }}" method="POST" class="mt-2" style="display:none;">
+                        @csrf
+                        @method('PUT')
+                        <div class="mb-2">
+                            <label class="form-label">Nom</label>
+                            <input type="text" name="name" value="{{ $user->name }}" class="form-control" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" value="{{ $user->email }}" class="form-control" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Rôle</label>
+                            <select name="role" class="form-control">
+                                <option value="user" {{ ($user->role ?? 'user') === 'user' ? 'selected' : '' }}>Utilisateur</option>
+                                <option value="admin" {{ ($user->role ?? 'user') === 'admin' ? 'selected' : '' }}>Administrateur</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm">Valider</button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="annulerModificationUser({{ $user->id }})">Annuler</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+
 
     <!-- Modal : Formulaire d'ajout de robe -->
     <div class="modal fade" id="ajouterRobeModal" tabindex="-1" aria-labelledby="ajouterRobeLabel" aria-hidden="true">

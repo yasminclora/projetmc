@@ -49,7 +49,7 @@
     
     <p>Bonjour {{ $user->name }},</p>
     
-    <p>Vous avez reçu une nouvelle commande. Voici les détails :</p>
+    <p>Vous avez reçu une nouvelle commande. Voici les détails de vos articles :</p>
     
     <table>
         <thead>
@@ -61,21 +61,27 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($commande->items as $item)
+            @php
+                $totalCommande = 0; // Initialiser une variable pour calculer le total de la commande
+            @endphp
+
+            @foreach ($articles as $item)
+                @php
+                    $totalItem = $item->prix_unitaire * $item->quantite;
+                    $totalCommande += $totalItem; // Ajouter le total de l'article au total global de la commande
+                @endphp
                 <tr>
                     <td>{{ $item->article_nom }}</td>
                     <td>{{ $item->quantite }}</td>
                     <td>{{ number_format($item->prix_unitaire, 2) }} DA</td>
-                    <td>{{ number_format($item->prix_unitaire * $item->quantite, 2) }} DA</td>
+                    <td>{{ number_format($totalItem, 2) }} DA</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
     <div class="total">
-        <p><strong>Référence commande:</strong> #{{ $commande->reference }}</p>
-        <p><strong>Date:</strong> {{ $commande->created_at->format('d/m/Y H:i') }}</p>
-        <p><strong>Total de la commande:</strong> {{ number_format($commande->total, 2) }} DA</p>
+        <p><strong>Total de la commande:</strong> {{ number_format($totalCommande, 2) }} DA</p>
     </div>
 
     <div class="footer">

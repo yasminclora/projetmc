@@ -10,10 +10,15 @@
 
     <title>Boutique de Robes Kabyle et accessoires</title>
 
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -22,7 +27,17 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <style>
-       
+       .brand-title {
+    font-family: 'Dancing Script', cursive;
+    /* Alternative: 'Dancing Script' pour un style plus cursif */
+    font-weight: 700;
+    font-size: 2.2rem;
+    color: #5a3921; /* Brun soutenu */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
+    margin: 0;
+    padding: 10px 0;
+}
 
 body {
             font-family: 'Georgia', 'Times New Roman', Times, serif;
@@ -92,12 +107,23 @@ body {
         main {
             padding: 20px;
         }
+
+
+
+
+
     </style>
 </head>
 <body>
     
 <nav>
-<h1>Boutique de Robes Kabyle et Accessoires</h1>
+<img src="{{ asset('images/fon.png') }}" 
+     alt="SyKabyle - Boutique de bijoux kabyles" 
+     class="logo"
+     width="350" 
+     height="120">
+     
+     <h1 class="brand-title">Boutique de Robes Kabyle et Accessoires</h1>
     <div class="onglet">
     <ul>
     <li>

@@ -7,8 +7,20 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
     <style>
+        .brand-title {
+    font-family: 'Dancing Script', cursive;
+    /* Alternative: 'Dancing Script' pour un style plus cursif */
+    font-weight: 700;
+    font-size: 2.2rem;
+    color: #5a3921; /* Brun soutenu */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
+    margin: 0;
+    padding: 10px 0;
+}
         body {
             font-family: 'Georgia', 'Times New Roman', Times, serif;
             background-color: #f5f5f5;
@@ -90,7 +102,7 @@
             align-items: center;
         }
         .quantity-btn {
-            background-color: #4CAF50;
+            background-color: #5a3921;
             color: white;
             padding: 5px 10px;
             border: none;
@@ -98,7 +110,7 @@
             font-size: 1.2em;
         }
         .quantity-btn:hover {
-            background-color: #45a049;
+            background-color:rgb(147, 132, 122);
         }
         .quantity-input {
             width: 40px;
@@ -125,7 +137,7 @@
             font-weight: bold;
         }
         .btn-commander {
-            background-color: #4CAF50;
+            background-color: #5a3921;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -136,7 +148,7 @@
             margin: 20px auto;
         }
         .btn-commander:hover {
-            background-color: #45a049;
+            background-color:#3e2723;
         }
         footer {
             text-align: center;
@@ -150,7 +162,13 @@
 
    
 <nav>
-<h1>Boutique de Robes Kabyle et Accessoires</h1>
+<img src="{{ asset('images/fon.png') }}" 
+     alt="SyKabyle - Boutique de bijoux kabyles" 
+     class="logo"
+     width="350" 
+     height="120">
+     
+     <h1 class="brand-title">Boutique de Robes Kabyle et Accessoires</h1>
     <div class="onglet">
     <ul>
     <li>
@@ -203,6 +221,163 @@
     <button class="btn-commander" onclick="validerCommande()">Commander</button>
 
   
+
+    
+    <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3 class="footer-title">SyKabyle</h3>
+            <p class="footer-text">Nous vous offrons les meilleures robes et accessoires kabyles depuis 2025.</p>
+        </div>
+
+        <div class="footer-column">
+            <h5 class="footer-subtitle">Liens Utiles</h5>
+            <ul class="footer-list">
+                <li><a href="{{ route('accueil') }}" class="footer-link"><i class="fas fa-house me-1"></i>Accueil</a></li>
+                <li><a href="{{ route('robes.index') }}" class="footer-link"><i class="fas fa-shirt me-1"></i>Nos Robes</a></li>
+                <li><a href="{{ route('bijoux.index') }}" class="footer-link"><i class="fas fa-gem me-1"></i>Accessoires</a></li>
+                <li><a href="{{ route('panier.index') }}" class="footer-link"><i class="fas fa-shopping-cart me-1"></i>Panier</a></li>
+                <li><a href="{{ route('login') }}" class="footer-link"><i class="fas fa-sign-in-alt me-1"></i>Connexion</a></li>
+                <li><a href="{{ route('register') }}" class="footer-link"><i class="fas fa-user-plus me-1"></i>Inscription</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h5 class="footer-subtitle">Contact</h5>
+            <ul class="footer-list">
+                <li><i class="fas fa-map-marker-alt me-2"></i>Centre commercial El-Hana, Béjaia</li>
+                <li><i class="fas fa-phone me-2"></i>+213 000000000</li>
+                <li><i class="fas fa-envelope me-2"></i>yasminemerabet404@gmail.com</li>
+                <li><i class="fas fa-clock me-2"></i>Lun-Sam: 9h-19h</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+        <div class="footer-copyright">
+            <p>© 2025 SyKabyle. Tous droits réservés.</p>
+        </div>
+        <div class="footer-social">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-x-twitter"></i></a>
+        </div>
+    </div>
+</footer>
+<style>
+
+.footer {
+    background-color:rgb(219, 218, 213);
+    color: #5d4037;
+    padding: 40px 0 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 220px;
+    margin-bottom: 30px;
+    padding: 0 15px;
+}
+
+.footer-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.5rem;
+    color: #8d6e63;
+    font-weight: 700;
+}
+
+.footer-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #6d4c41;
+}
+
+.footer-text {
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-list li {
+    margin-bottom: 12px;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.footer-link {
+    color: #5d4037;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.footer-link:hover {
+    color: #3e2723;
+    text-decoration: underline;
+}
+
+/* Ligne de séparation */
+.footer-divider {
+    border-top: 1px solid #d7ccc8;
+    margin: 20px auto;
+    max-width: 1160px;
+}
+
+/* Bas du footer */
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icon {
+    color: #5d4037;
+    font-size: 1.4rem;
+    transition: color 0.3s;
+}
+
+.social-icon:hover {
+    color: #3e2723;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-column {
+        flex: 100%;
+        margin-bottom: 20px;
+    }
+    .footer-bottom {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+</style>
     <script>
         // Afficher le panier au chargement de la page
         window.onload = afficherPanier;
@@ -269,7 +444,6 @@
         }
 
 
-
         async function validerCommande() {
     const panier = JSON.parse(localStorage.getItem('panier')) || [];
     console.log('Contenu du panier avant envoi:', JSON.stringify(panier, null, 2));
@@ -279,9 +453,19 @@
         return;
     }
 
-    // Transformation des données avec vérification stricte
+    // Vérifier si l'utilisateur est authentifié
+    const userIsAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+    if (!userIsAuthenticated) {
+        // Afficher un message demandant à l'utilisateur de se connecter
+        const confirmation = confirm("Vous devez être connecté pour passer une commande. Voulez-vous vous connecter maintenant ?");
+        if (confirmation) {
+            window.location.href = "/login";  // Redirige vers la page de connexion
+        }
+        return;
+    }
+
+    // Si l'utilisateur est authentifié, procéder à la commande
     const items = panier.map(item => {
-        // Vérification explicite du type
         if (item.category === 'robes' || item.nom.includes('Robe')) {
             return {
                 id: item.id,
@@ -299,8 +483,6 @@
         }
     });
 
-    console.log('Données transformées pour envoi:', JSON.stringify(items, null, 2));
-
     try {
         const response = await fetch('/commander', {
             method: 'POST',
@@ -314,7 +496,6 @@
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('Détails de l\'erreur:', errorData);
             throw new Error(errorData.message || 'Erreur serveur');
         }
 
@@ -322,10 +503,10 @@
         localStorage.removeItem('panier');
         window.location.href = `/confirmation-commande?reference=${data.reference}`;
     } catch (error) {
-        console.error('Erreur complète:', error);
-        alert(`Erreur: ${error.message}\nVeuillez vérifier la console pour plus de détails.`);
+        alert(`Erreur: ${error.message}`);
     }
 }
+
     </script>
 </body>
 </html>

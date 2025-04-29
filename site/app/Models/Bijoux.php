@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\User;
+
+use App\Models\Signalement;
 use Illuminate\Database\Eloquent\Model;
 
 class Bijoux extends Model
@@ -33,4 +35,13 @@ public function commentaires()
     {
         return $this->morphMany(Commentaire::class, 'commentable');
     }
+
+
+
+    public function signalements()
+    {
+        return $this->morphMany(Signalement::class, 'signalable');
+    }
+    
+
 }

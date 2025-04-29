@@ -9,42 +9,37 @@
                     <i class="fas fa-user-edit"></i> {{ __('Modifier le profil') }}
                 </div>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('profile.update') }}">
-                        @csrf
-                        @method('PUT')
+                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+    @method('PUT')
 
-                        <!-- Champ Nom -->
-                        <div class="mb-3">
-                            <label for="name" class="form-label">{{ __('Nom') }}</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background-color: #6d4c41; color: white;">
-                                    <i class="fas fa-user"></i>
-                                </span>
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', Auth::user()->name) }}" required autofocus>
-                            </div>
-                            @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
+    <div class="form-group">
+        <label>Nom</label>
+        <input type="text" name="nom" class="form-control" value="{{ Auth::user()->nom }}">
+    </div>
 
-                        <!-- Champ Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">{{ __('Email') }}</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background-color: #6d4c41; color: white;">
-                                    <i class="fas fa-envelope"></i>
-                                </span>
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', Auth::user()->email) }}" required>
-                            </div>
-                            @error('email')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
+    <div class="form-group">
+        <label>Prénom</label>
+        <input type="text" name="prenom" class="form-control" value="{{ Auth::user()->prenom }}">
+    </div>
+
+    <div class="form-group">
+        <label>Adresse</label>
+        <input type="text" name="adresse" class="form-control" value="{{ Auth::user()->adresse }}">
+    </div>
+
+    <div class="form-group">
+        <label>Numéro</label>
+        <input type="text" name="telephone" class="form-control" value="{{ Auth::user()->telephone }}">
+    </div>
+
+    <div class="form-group">
+        <label>Image de profil</label>
+        <input type="file" name="image" class="form-control-file">
+    </div>
+
+
+
 
                         <!-- Bouton Soumettre -->
                         <div class="d-grid">

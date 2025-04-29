@@ -27,6 +27,14 @@ class Panier extends Model
         });
     }
 
-
+    public function paniers()
+    {
+        return $this->hasMany(Panier::class);
+    }
+    
+    public function commandes()
+    {
+        return $this->hasMany(Commande::class);
+    }
 
 }

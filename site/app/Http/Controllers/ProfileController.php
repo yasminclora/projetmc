@@ -32,23 +32,32 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-
-        // Valider les données du formulaire
+    
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'nom' => 'nullable|string|max:255',
+            'prenom' => 'nullable|string|max:255',
+            'adresse' => 'nullable|string|max:255',
+'telephone' => [
+    'nullable',
+    'string',
+    'max:20',
+    'regex:/^(05|06|07)[0-9]{8}$/'
+],            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
-        // Mettre à jour les informations de l'utilisateur
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-        ]);
-
-        return redirect()->route('profile.show')->with('success', 'Profil mis à jour avec succès !');
-    }
-
-
+    
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('profiles', 'public');
+            $user->image = $imagePath;
+        }
+    
+        $user->nom = $request->nom;
+        $user->prenom = $request->prenom;
+        $user->adresse = $request->adresse;
+        $user->telephone = $request->telephone;
+        $user->save();
+    
+        return view('profile', compact('user'));    }
+    
  
 
 }

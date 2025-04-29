@@ -12,8 +12,8 @@ class AccueilController extends Controller
     public function index()
     {
         // Récupérer les 4 dernières robes et les 4 derniers bijoux
-        $recentRobes = Robe::latest()->take(4)->get();
-        $recentBijoux = Bijoux::latest()->take(4)->get();
+        $recentRobes = Robe::latest()->take(5)->get();
+        $recentBijoux = Bijoux::latest()->take(5)->get();
     
         // Fusionner les deux collections
         $recentArticles = $recentRobes->merge($recentBijoux);

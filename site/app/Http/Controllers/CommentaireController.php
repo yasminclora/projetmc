@@ -10,20 +10,23 @@ use App\Models\User;
 class CommentaireController extends Controller
 {
     // Ajouter un commentaire
-    public function store(Request $request)
+    public function store(Request $request, $robe_id)
     {
         $request->validate([
             'commentaire' => 'required|max:500',
+            'robe_id' => 'required|exists:robes,id', // Validation de l'existence de la robe
         ]);
-
+    
         $commentaire = new Commentaire();
         $commentaire->commentaire = $request->commentaire;
-        $commentaire->user_id = auth()->id();
-        $commentaire->robe_id = $request->robe_id; // Assurez-vous de récupérer robe_id depuis la requête
+        $commentaire->user_id = auth()->id(); // L'utilisateur authentifié
+        $commentaire->robe_id = $robe_id; // Utilisation de l'ID de la robe passé dans la route
         $commentaire->save();
-
-        return redirect()->back()->with('success', 'Commentaire ajouté avec succès!');
+    
+        return redirect()->route('robe.details', $robe_id)
+                         ->with('success', 'Commentaire ajouté avec succès!');
     }
+    
 
     // Afficher le formulaire pour modifier un commentaire
     public function edit(Commentaire $commentaire)

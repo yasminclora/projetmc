@@ -10,131 +10,157 @@
     <!-- Lien vers la bibliothèque emoji-button -->
     <script src="https://cdn.jsdelivr.net/npm/emoji-button@4.5.0/dist/index.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-button@4.5.0/dist/index.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    
     <style>
-        body {
-            font-family: 'Georgia', 'Times New Roman', Times, serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-        }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to right, #f0ebe3, #f5f5f5);
+        margin: 0;
+        padding: 20px;
+    }
 
-        .content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-top: 20px;
-        }
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-top: 20px;
+    }
 
-        .robe-detail-card {
-            flex: 0 0 30%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
+    .robe-detail-card {
+        flex: 1 1 30%;
+        background-color: #fff;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
 
-        .robe-detail-card:hover {
-            transform: scale(1.05);
-        }
+    .robe-detail-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
 
-        .robe-detail-card img {
-            width: 80%;
-            height: auto;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
+    .robe-detail-card img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
 
-        .robe-detail-card h3 {
-            font-size: 1.8em;
-            color: saddlebrown;
-            margin-bottom: 15px;
-        }
+    .robe-detail-card h3 {
+        font-size: 2em;
+        color: #5d4037;
+        margin-bottom: 10px;
+    }
 
-        .robe-detail-card p {
-            font-size: 1.1em;
-            color: #333;
-            margin-bottom: 15px;
-        }
+    .robe-detail-card p {
+        font-size: 1.1em;
+        color: #666;
+        margin-bottom: 10px;
+    }
 
-        .price {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 20px;
-        }
+    .price {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #8d6e63;
+        margin: 20px 0;
+    }
 
-        .btn-ajouter-panier, .back-button {
-            background-color: #6d4c41;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 10px;
-        }
+    .btn-ajouter-panier, .back-button {
+        display: inline-block;
+        background-color: #6d4c41;
+        color: #fff;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
 
-        .btn-ajouter-panier:hover, .back-button:hover {
-            background-color: #3e2723;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-        }
+    .btn-ajouter-panier:hover, .back-button:hover {
+        background-color: #3e2723;
+        transform: scale(1.05);
+    }
 
-        #commentaires {
-            flex: 0 0 68%;
-            margin-left: 20px;
-        }
+    #commentaires {
+        flex: 1 1 60%;
+    }
 
-        .commentaire {
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    #commentaires h3 {
+        font-size: 1.8em;
+        margin-bottom: 15px;
+        color: #5d4037;
+    }
 
-        .commentaire p {
-            font-size: 0.9em;
-            color: #333;
-            margin-bottom: 10px;
-        }
+    .commentaire {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        position: relative;
+    }
 
-        .commentaire .meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9em;
-            color: #888;
-            margin-bottom: 10px;
-        }
+    .commentaire .meta {
+        font-size: 0.9em;
+        color: #aaa;
+        margin-bottom: 10px;
+    }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
+    .commentaire .actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 15px;
+    }
 
-        .commentaire .actions button {
-            color: saddlebrown;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
+    .commentaire .actions button {
+        background: none;
+        border: none;
+        color: #6d4c41;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
 
-        .commentaire .actions button:hover {
-            text-decoration: underline;
-        }
+    .commentaire .actions button:hover {
+        color: #3e2723;
+        text-decoration: underline;
+    }
 
-        .hidden-comment {
-            display: none;
-        }
-    </style>
+    #toggle-commentaires {
+        margin-top: 20px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        resize: vertical;
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+</style>
+
 </head>
 <body>
 
@@ -147,7 +173,8 @@
         <p>{{ $robe->description }}</p>
         <p class="price">{{ $robe->prix }} DA</p>
         <button class="btn-ajouter-panier" onclick="ajouterAuPanier({{ $robe->id }}, '{{ $robe->nom }}', '{{ $robe->prix }}', '{{ asset('storage/' . $robe->image) }}', {{ $robe->user_id }})">
-            Ajouter au panier
+        <i class="fas fa-shopping-cart"></i> Ajouter au panier
+
         </button>
     </div>
 
@@ -169,8 +196,8 @@
                         <button onclick="traduireCommentaire('{{ $commentaire->commentaire }}', {{ $commentaire->id }})">Traduire</button>
                         @if(auth()->user() && auth()->user()->id == $commentaire->user_id)
                             <button onclick="toggleEditForm({{ $commentaire->id }})">Modifier</button>
-                            <form id="edit-form-{{ $commentaire->id }}" action="{{ route('commentaires.update', $commentaire->id) }}" method="POST" style="display:none;">
-                                @csrf @method('PUT')
+                            <form id="edit-form-{{ $commentaire->id }}" action="{{ route('robes.commentaires.update', ['robeId' => $robe->id, 'commentaireId' => $commentaire->id]) }}" method="POST" style="display:none;">
+                            @csrf @method('PUT')
                                 <textarea name="commentaire">{{ $commentaire->commentaire }}</textarea>
                                 <button type="submit">Sauvegarder</button>
                                 <button type="button" onclick="toggleEditForm({{ $commentaire->id }})">Annuler</button>
@@ -195,12 +222,13 @@
 
         <div id="commentaire-form" style="margin-top: 20px;">
             @auth
-                <form action="{{ route('commentaires.store', $robe->id) }}" method="POST">
-                    @csrf
-                    <textarea name="commentaire" id="commentaire" placeholder="Écrivez un commentaire..." required></textarea>
-                   
-                    <button type="submit" class="btn-ajouter-panier">Ajouter un commentaire</button>
-                </form>
+            <form action="{{ route('robes.commentaires.store', $robe->id) }}" method="POST">
+    @csrf
+    <textarea name="commentaire" id="commentaire" placeholder="Écrivez un commentaire..." required></textarea>
+    <button type="submit" class="btn-ajouter-panier">Ajouter un commentaire</button>
+</form>
+
+
             @else
                 <p>Vous devez être connecté pour commenter.</p>
             @endauth
@@ -272,6 +300,14 @@
 
         traduireChunks(chunks);
     }
+
+
+
+
+
+
+
+
     function ajouterAuPanier(id, nom, prix, image, vendeurId) {
            // Vérifier si l'utilisateur est authentifié
         if (currentUserId === null) {

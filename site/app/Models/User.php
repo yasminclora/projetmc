@@ -45,4 +45,31 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    public function commandes()
+{
+    return $this->hasMany(Commande::class);
+}
+
+
+
+public function isAdmin()
+{
+    return $this->role === 'admin'; // Assurez-vous que votre table users a une colonne 'role'
+}
+
+
+
+
+
+
+
+
+public function paniers()
+{
+    return $this->hasMany(Panier::class);
+}
+
+
 }
